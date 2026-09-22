@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVA — Everyday Essentials</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f1e9;
+  color:#171717;
+}
+
+button,input{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.top{
+  background:#171717;
+  color:white;
+  text-align:center;
+  padding:10px;
+  font-size:12px;
+}
+
+nav{
+  height:76px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 5%;
+  border-bottom:1px solid #ddd6ca;
+  position:sticky;
+  top:0;
+  background:#f5f1e9ee;
+  backdrop-filter:blur(12px);
+  z-index:20;
+}
+
+.logo{
+  font-size:26px;
+  font-weight:800;
+  letter-spacing:-2px;
+}
+
+.links{
+  display:flex;
+  gap:28px;
+}
+
+.links a{
+  color:#171717;
+  text-decoration:none;
+  font-size:14px;
+}
+
+.navbtn{
+  border:0;
+  background:none;
+  margin-left:10px;
+}
+
+/* HERO */
+
+.hero{
+  min-height:650px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:30px;
+  padding:45px 5% 70px;
+}
+
+.heroText{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.eyebrow{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:3px;
+  margin-bottom:22px;
+}
+
+h1{
+  font-size:clamp(55px,8vw,110px);
+  line-height:.86;
+  letter-spacing:-7px;
+  margin-bottom:30px;
+}
+
+.heroText p{
+  font-size:17px;
+  line-height:1.7;
+  max-width:500px;
+  color:#5c574f;
+}
+
+.cta{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  background:#171717;
+  color:white;
+  border:0;
+  padding:15px 22px;
+  margin-top:22px;
+  width:max-content;
+}
+
+.heroImg{
+  min-height:560px;
+  background:
+  url("https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?auto=format&fit=crop&w=1200&q=85")
+  center/cover;
+}
+
+/* SECTIONS */
+
+.section{
+  padding:90px 5%;
+}
+
+.sectionHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  margin-bottom:35px;
+}
+
+.section h2{
+  font-size:clamp(38px,5vw,65px);
+  letter-spacing:-4px;
+}
+
+.muted{
+  color:#706b62;
+  font-size:13px;
+}
+
+/* PRODUCTS */
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+
+.card{
+  position:relative;
+}
+
+.pic{
+  aspect-ratio:4/5;
+  background:#e5dfd4 center/cover;
+}
+
+.card:nth-child(1) .pic{
+  background-image:url("https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=700&q=80");
+}
+
+.card:nth-child(2) .pic{
+  background-image:url("https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=700&q=80");
+}
+
+.card:nth-child(3) .pic{
+  background-image:url("https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=700&q=80");
+}
+
+.card:nth-child(4) .pic{
+  background-image:url("https://images.unsplash.com/photo-1616627561950-9f746e330187?auto=format&fit=crop&w=700&q=80");
+}
+
+.tag{
+  position:absolute;
+  top:12px;
+  left:12px;
+  background:#f5f1e9;
+  padding:7px 9px;
+  font-size:10px;
+  text-transform:uppercase;
+}
+
+.info{
+  display:flex;
+  justify-content:space-between;
+  padding:13px 0;
+}
+
+.name{
+  font-size:14px;
+}
+
+.price{
+  font-size:14px;
+  font-weight:bold;
+}
+
+.small{
+  font-size:11px;
+  color:#777;
+  margin-top:5px;
+}
+
+.add{
+  width:100%;
+  padding:11px;
+  border:0;
+  background:#171717;
+  color:white;
+  margin-top:5px;
+}
+
+/* CATEGORIES */
+
+.categories{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+.cat{
+  min-height:390px;
+  padding:25px;
+  display:flex;
+  align-items:end;
+  color:white;
+  background:center/cover;
+  position:relative;
+  overflow:hidden;
+}
+
+.cat:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    transparent,
+    rgba(0,0,0,.75)
+  );
+}
+
+.cat div{
+  position:relative;
+  z-index:1;
+}
+
+.cat h3{
+  font-size:30px;
+  margin-bottom:8px;
+}
+
+.cat:nth-child(1){
+  background-image:url("https://images.unsplash.com/photo-1600494603989-9650cf6ddd3d?auto=format&fit=crop&w=900&q=80");
+}
+
+.cat:nth-child(2){
+  background-image:url("https://images.unsplash.com/photo-1540932239986-30128078f3c5?auto=format&fit=crop&w=900&q=80");
+}
+
+.cat:nth-child(3){
+  background-image:url("https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=900&q=80");
+}
+
+/* STORY */
+
+.story{
+  background:#20241f;
+  color:#f3efe6;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  min-height:600px;
+}
+
+.storyImg{
+  background:
+  url("https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1100&q=85")
+  center/cover;
+}
+
+.storyText{
+  padding:8vw;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.storyText h2{
+  font-size:clamp(42px,5vw,70px);
+  line-height:.9;
+  letter-spacing:-5px;
+  margin-bottom:25px;
+}
+
+.storyText p{
+  line-height:1.7;
+  color:#c9c4ba;
+  max-width:480px;
+}
+
+/* NEWSLETTER */
+
+.news{
+  padding:100px 5%;
+  text-align:center;
+}
+
+.news h2{
+  font-size:clamp(42px,6vw,75px);
+  letter-spacing:-5px;
+  margin-bottom:15px;
+}
+
+.form{
+  display:flex;
+  max-width:520px;
+  margin:30px auto 0;
+  border-bottom:1px solid #171717;
+}
+
+.form input{
+  flex:1;
+  border:0;
+  background:none;
+  padding:15px 0;
+  outline:none;
+}
+
+.form button{
+  border:0;
+  background:none;
+  font-weight:bold;
+}
+
+/* FOOTER */
+
+footer{
+  background:#171717;
+  color:white;
+  padding:55px 5%;
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:35px;
+}
+
+.footlogo{
+  font-size:28px;
+  font-weight:bold;
+}
+
+.footerTitle{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  color:#aaa;
+  margin-bottom:15px;
+}
+
+footer a{
+  display:block;
+  color:white;
+  text-decoration:none;
+  font-size:13px;
+  margin:9px 0;
+}
+
+/* CART */
+
+.cart{
+  position:fixed;
+  right:0;
+  top:0;
+  width:min(390px,100%);
+  height:100vh;
+  background:#f5f1e9;
+  z-index:50;
+  padding:25px;
+  transform:translateX(105%);
+  transition:.3s;
+  box-shadow:-10px 0 30px #0002;
+}
+
+.cart.open{
+  transform:translateX(0);
+}
+
+.cartHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #ccc;
+  padding-bottom:18px;
+}
+
+.close{
+  border:0;
+  background:none;
+  font-size:25px;
+}
+
+.cartItems{
+  padding:20px 0;
+}
+
+.cartItem{
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid #ddd;
+  padding:13px 0;
+  font-size:13px;
+}
+
+.remove{
+  border:0;
+  background:none;
+  color:#777;
+}
+
+.total{
+  border-top:1px solid #aaa;
+  padding-top:18px;
+  display:flex;
+  justify-content:space-between;
+  font-weight:bold;
+}
+
+.checkout{
+  width:100%;
+  padding:15px;
+  background:#171717;
+  color:white;
+  border:0;
+  margin-top:18px;
+}
+
+.overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#0007;
+  z-index:40;
+}
+
+.overlay.show{
+  display:block;
+}
+
+/* MOBILE */
+
+@media(max-width:800px){
+
+  .links{
+    display:none;
+  }
+
+  .hero{
+    grid-template-columns:1fr;
+  }
+
+  .heroImg{
+    min-height:400px;
+    grid-row:1;
+  }
+
+  .heroText{
+    padding:30px 0;
+  }
+
+  .grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .categories{
+    grid-template-columns:1fr;
+  }
+
+  .cat{
+    min-height:300px;
+  }
+
+  .story{
+    grid-template-columns:1fr;
+  }
+
+  .storyImg{
+    min-height:400px;
+  }
+
+  footer{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media(max-width:480px){
+
+  h1{
+    font-size:58px;
+    letter-spacing:-4px;
+  }
+
+  .grid{
+    gap:10px;
+  }
+
+  .section{
+    padding:65px 5%;
+  }
+
+  .sectionHead{
+    display:block;
+  }
+
+  .sectionHead .muted{
+    display:block;
+    margin-top:8px;
+  }
+
+  footer{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="top">
+FREE DELIVERY ON ORDERS OVER ₦150,000 · SHOP THE NEW EDIT
+</div>
+
+<nav>
+
+<div class="logo">
+NOVA.
+</div>
+
+<div class="links">
+<a href="#shop">Shop</a>
+<a href="#categories">Collections</a>
+<a href="#story">Our Story</a>
+</div>
+
+<div>
+<button class="navbtn" onclick="searchShop()">Search</button>
+
+<button class="navbtn" onclick="toggleCart()">
+Bag (<span id="count">0</span>)
+</button>
+</div>
+
+</nav>
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="heroText">
+
+<div class="eyebrow">
+The everyday edit / 2026
+</div>
+
+<h1>
+Live with<br>
+intention.
+</h1>
+
+<p>
+Beautiful essentials for modern Nigerian homes.
+Thoughtful pieces, warm textures and simple forms
+made for everyday life.
+</p>
+
+<button class="cta"
+onclick="document.querySelector('#shop').scrollIntoView()">
+Explore products ↗
+</button>
+
+</div>
+
+<div class="heroImg"></div>
+
+</section>
+
+
+<!-- PRODUCTS -->
+
+<section class="section" id="shop">
+
+<div class="sectionHead">
+
+<h2>
+Popular pieces.
+</h2>
+
+<span class="muted">
+Small details. Big difference.
+</span>
+
+</div>
+
+
+<div class="grid">
+
+
+<article class="card">
+
+<span class="tag">
+New
+</span>
+
+<div class="pic"></div>
+
+<div class="info">
+
+<div>
+<div class="name">
+Luna Lounge Chair
+</div>
+
+<div class="small">
+Sand boucle
+</div>
+</div>
+
+<div class="price">
+₦420,000
+</div>
+
+</div>
+
+<button class="add"
+onclick="add('Luna Lounge Chair',420000)">
+Add to bag
+</button>
+
+</article>
+
+
+<article class="card">
+
+<span class="tag">
+Bestseller
+</span>
+
+<div class="pic"></div>
+
+<div class="info">
+
+<div>
+<div class="name">
+Sculpt Form Vase
+</div>
+
+<div class="small">
+Stone ceramic
+</div>
+</div>
+
+<div class="price">
+₦58,000
+</div>
+
+</div>
+
+<button class="add"
+onclick="add('Sculpt Form Vase',58000)">
+Add to bag
+</button>
+
+</article>
+
+
+<article class="card">
+
+<div class="pic"></div>
+
+<div class="info">
+
+<div>
+<div class="name">
+No. 07 Candle
+</div>
+
+<div class="small">
+Cedar & Amber
+</div>
+</div>
+
+<div class="price">
+₦25,000
+</div>
+
+</div>
+
+<button class="add"
+onclick="add('No. 07 Candle',25000)">
+Add to bag
+</button>
+
+</article>
+
+
+<article class="card">
+
+<span class="tag">
+New
+</span>
+
+<div class="pic"></div>
+
+<div class="info">
+
+<div>
+<div class="name">
+Cloud Linen Set
+</div>
+
+<div class="small">
+Natural linen
+</div>
+</div>
+
+<div class="price">
+₦96,000
+</div>
+
+</div>
+
+<button class="add"
+onclick="add('Cloud Linen Set',96000)">
+Add to bag
+</button>
+
+</article>
+
+
+</div>
+
+</section>
+
+
+<!-- CATEGORIES -->
+
+<section class="section" id="categories">
+
+<div class="sectionHead">
+
+<h2>
+Shop by mood.
+</h2>
+
+<span class="muted">
+Find your next favourite.
+</span>
+
+</div>
+
+
+<div class="categories">
+
+<div class="cat">
+
+<div>
+
+<h3>
+Soft living
+</h3>
+
+<span>
+Bedroom & textiles ↗
+</span>
+
+</div>
+
+</div>
+
+
+<div class="cat">
+
+<div>
+
+<h3>
+Warm glow
+</h3>
+
+<span>
+Lighting & objects ↗
+</span>
+
+</div>
+
+</div>
+
+
+<div class="cat">
+
+<div>
+
+<h3>
+Gathering
+</h3>
+
+<span>
+Dining & kitchen ↗
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- STORY -->
+
+<section class="story" id="story">
+
+<div class="storyImg"></div>
+
+<div class="storyText">
+
+<div class="eyebrow">
+The NOVA standard
+</div>
+
+<h2>
+Less clutter.<br>
+More feeling.
+</h2>
+
+<p>
+We select pieces that earn their place.
+From quiet mornings to evenings with friends,
+every object is chosen to make ordinary moments
+feel a little more special.
+</p>
+
+<button class="cta">
+Discover our story ↗
+</button>
+
+</div>
+
+</section>
+
+
+<!-- NEWSLETTER -->
+
+<section class="news">
+
+<div class="eyebrow">
+A little note
+</div>
+
+<h2>
+Good things,<br>
+in your inbox.
+</h2>
+
+<p class="muted">
+New arrivals, styling ideas and occasional offers.
+No noise.
+</p>
+
+<form
+class="form"
+onsubmit="subscribe(event)">
+
+<input
+type="email"
+placeholder="your@email.com"
+required>
+
+<button>
+Join ↗
+</button>
+
+</form>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+<div>
+
+<div class="footlogo">
+NOVA.
+</div>
+
+<p style="color:#aaa;font-size:13px;line-height:1.6;max-width:280px;margin-top:15px">
+Modern essentials for everyday Nigerian living.
+</p>
+
+</div>
+
+
+<div>
+
+<div class="footerTitle">
+Explore
+</div>
+
+<a href="#shop">
+Shop all
+</a>
+
+<a href="#categories">
+Collections
+</a>
+
+<a href="#story">
+Our story
+</a>
+
+</div>
+
+
+<div>
+
+<div class="footerTitle">
+Help
+</div>
+
+<a href="#">
+Shipping
+</a>
+
+<a href="#">
+Returns
+</a>
+
+<a href="#">
+Contact
+</a>
+
+</div>
+
+
+<div>
+
+<div class="footerTitle">
+Social
+</div>
+
+<a href="#">
+Instagram
+</a>
+
+<a href="#">
+TikTok
+</a>
+
+<a href="#">
+Pinterest
+</a>
+
+</div>
+
+</footer>
+
+
+<!-- CART -->
+
+<div
+class="overlay"
+id="overlay"
+onclick="toggleCart()">
+</div>
+
+
+<aside
+class="cart"
+id="cart">
+
+<div class="cartHead">
+
+<strong>
+Your bag
+</strong>
+
+<button
+class="close"
+onclick="toggleCart()">
+×
+</button>
+
+</div>
+
+
+<div
+class="cartItems"
+id="items">
+
+<p class="muted">
+Your bag is empty.
+</p>
+
+</div>
+
+
+<div class="total">
+
+<span>
+Total
+</span>
+
+<span id="total">
+₦0
+</span>
+
+</div>
+
+
+<button
+class="checkout"
+onclick="checkout()">
+
+Proceed to checkout
+
+</button>
+
+</aside>
+
+
+<script>
+
+let bag=[];
+
+
+function money(number){
+
+return "₦" +
+number.toLocaleString("en-NG");
+
+}
+
+
+function add(name,price){
+
+bag.push({
+name:name,
+price:price
+});
+
+renderCart();
+
+document
+.getElementById("cart")
+.classList.add("open");
+
+document
+.getElementById("overlay")
+.classList.add("show");
+
+}
+
+
+function renderCart(){
+
+document
+.getElementById("count")
+.textContent=bag.length;
+
+let box=document.getElementById("items");
+
+
+if(bag.length===0){
+
+box.innerHTML=
+'<p class="muted">Your bag is empty.</p>';
+
+}
+
+else{
+
+box.innerHTML=bag.map(
+
+(item,index)=>`
+
+<div class="cartItem">
+
+<span>
+
+${item.name}
+
+<br>
+
+<small>
+${money(item.price)}
+</small>
+
+</span>
+
+<button
+class="remove"
+onclick="removeItem(${index})">
+
+Remove
+
+</button>
+
+</div>
+
+`
+
+).join("");
+
+}
+
+
+let total=bag.reduce(
+(sum,item)=>sum+item.price,
+0
+);
+
+document
+.getElementById("total")
+.textContent=money(total);
+
+}
+
+
+function removeItem(index){
+
+bag.splice(index,1);
+
+renderCart();
+
+}
+
+
+function toggleCart(){
+
+document
+.getElementById("cart")
+.classList.toggle("open");
+
+document
+.getElementById("overlay")
+.classList.toggle("show");
+
+}
+
+
+function checkout(){
+
+if(bag.length===0){
+
+alert("Your bag is empty.");
+
+return;
+
+}
+
+alert(
+"Checkout demo ready! Connect Paystack, Flutterwave or another payment gateway here."
+);
+
+}
+
+
+function searchShop(){
+
+let search=prompt(
+"What product are you looking for?"
+);
+
+if(search){
+
+alert(
+'Searching for "'+
+search+
+'"...'
+);
+
+}
+
+}
+
+
+function subscribe(event){
+
+event.preventDefault();
+
+alert(
+"Thanks for joining NOVA! 🎉"
+);
+
+}
+
+</script>
+
+</body>
+</html>

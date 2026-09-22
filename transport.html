@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DANTTEL Transport | Move With Confidence</title>
+
+<style>
+:root{
+  --navy:#071525;
+  --navy2:#0d2238;
+  --gold:#f4b83f;
+  --white:#fff;
+  --ink:#182333;
+  --muted:#697588;
+  --line:#e7ebf0;
+  --green:#16a05d;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  background:#f7f8fa;
+  line-height:1.6;
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+.wrap{
+  width:min(1120px,92%);
+  margin:auto;
+}
+
+/* NAVBAR */
+
+header{
+  position:fixed;
+  top:0;
+  width:100%;
+  z-index:20;
+  background:rgba(7,21,37,.95);
+  color:#fff;
+}
+
+.nav{
+  height:74px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo{
+  font-size:27px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.logo b{
+  color:var(--gold);
+}
+
+.links{
+  display:flex;
+  gap:25px;
+  align-items:center;
+}
+
+.links a{
+  font-size:14px;
+  color:#dce5ee;
+}
+
+.links a:hover{
+  color:var(--gold);
+}
+
+.menu{
+  display:none;
+  background:none;
+  border:0;
+  color:#fff;
+  font-size:27px;
+}
+
+/* BUTTONS */
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:0;
+  border-radius:9px;
+  padding:13px 19px;
+  font-weight:800;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+}
+
+.gold{
+  background:var(--gold);
+  color:#111;
+}
+
+.dark{
+  background:var(--navy);
+  color:#fff;
+}
+
+.green{
+  background:var(--green);
+  color:#fff;
+}
+
+/* HERO */
+
+.hero{
+  padding:145px 0 85px;
+  min-height:720px;
+  color:#fff;
+
+  background:
+  linear-gradient(
+    90deg,
+    rgba(4,12,21,.96),
+    rgba(4,12,21,.76),
+    rgba(4,12,21,.3)
+  ),
+  url("https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1800&q=85")
+  center/cover;
+}
+
+.heroGrid{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:55px;
+  align-items:center;
+}
+
+.pill{
+  display:inline-block;
+  border:1px solid #dca62f;
+  background:rgba(244,184,63,.12);
+  color:#ffd77e;
+  padding:6px 11px;
+  border-radius:30px;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+h1{
+  font-size:clamp(43px,6vw,70px);
+  line-height:1.02;
+  margin:18px 0;
+}
+
+.hero h1 span{
+  color:var(--gold);
+}
+
+.heroText{
+  color:#d6e0ea;
+  font-size:18px;
+  max-width:620px;
+  margin-bottom:25px;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+/* BOOKING CARD */
+
+.bookCard{
+  background:#fff;
+  color:var(--ink);
+  border-radius:18px;
+  padding:24px;
+  box-shadow:0 25px 60px #0005;
+}
+
+.bookCard h2{
+  font-size:22px;
+}
+
+.bookCard small{
+  color:var(--muted);
+  display:block;
+  margin:3px 0 17px;
+}
+
+/* FORMS */
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:11px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.field.full{
+  grid-column:1/-1;
+}
+
+.field label{
+  font-size:11px;
+  font-weight:800;
+  color:#4e5b6e;
+}
+
+.field input,
+.field select,
+.field textarea{
+  width:100%;
+  padding:11px;
+  border:1px solid #dce2e9;
+  border-radius:8px;
+  outline:none;
+  background:#fff;
+}
+
+.field textarea{
+  min-height:75px;
+  resize:vertical;
+}
+
+/* SECTIONS */
+
+.section{
+  padding:82px 0;
+}
+
+.heading{
+  text-align:center;
+  max-width:700px;
+  margin:0 auto 38px;
+}
+
+.eyebrow{
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  color:#a56f08;
+}
+
+.heading h2{
+  font-size:clamp(30px,4vw,43px);
+  line-height:1.15;
+  margin:7px 0;
+}
+
+.heading p{
+  color:var(--muted);
+}
+
+/* SERVICES */
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+
+.card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:24px;
+  transition:.2s;
+}
+
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 15px 35px #12243d12;
+}
+
+.ico{
+  width:50px;
+  height:50px;
+  border-radius:12px;
+  background:#fff8e9;
+  display:grid;
+  place-items:center;
+  font-size:23px;
+  margin-bottom:15px;
+}
+
+.card h3{
+  margin-bottom:7px;
+}
+
+.card p{
+  font-size:14px;
+  color:var(--muted);
+}
+
+/* DARK SECTION */
+
+.darkSection{
+  background:var(--navy);
+  color:#fff;
+}
+
+.darkSection .heading h2{
+  color:#fff;
+}
+
+.darkSection .heading p{
+  color:#bdc8d4;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+.stat{
+  text-align:center;
+  border:1px solid #ffffff16;
+  background:#ffffff08;
+  border-radius:12px;
+  padding:22px;
+}
+
+.stat strong{
+  display:block;
+  color:var(--gold);
+  font-size:32px;
+}
+
+.stat span{
+  font-size:13px;
+  color:#b9c5d1;
+}
+
+/* ABOUT */
+
+.split{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:25px;
+  align-items:center;
+}
+
+.splitImage{
+  min-height:430px;
+  border-radius:18px;
+
+  background:
+  url("https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1200&q=85")
+  center/cover;
+}
+
+.checklist{
+  margin:20px 0;
+  display:grid;
+  gap:10px;
+}
+
+.checklist div{
+  font-weight:700;
+}
+
+.checklist span{
+  color:var(--gold);
+  margin-right:8px;
+}
+
+/* ROUTES / FLEET */
+
+.routeGrid,
+.fleetGrid,
+.reviewGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+
+.route,
+.fleet,
+.review{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.pic{
+  height:185px;
+  background-size:cover;
+  background-position:center;
+}
+
+.routeBody,
+.fleetBody,
+.reviewBody{
+  padding:18px;
+}
+
+.routeBody p,
+.fleetBody p,
+.review p{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.tags{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+.tag{
+  font-size:10px;
+  background:#f0f2f5;
+  padding:5px 8px;
+  border-radius:20px;
+  color:#566174;
+}
+
+/* FARE CALCULATOR */
+
+.calculator{
+  background:linear-gradient(
+    135deg,
+    var(--navy),
+    var(--navy2)
+  );
+
+  color:#fff;
+  border-radius:20px;
+  padding:36px;
+}
+
+.calcGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  align-items:start;
+}
+
+.calculator .field label{
+  color:#c8d2dc;
+}
+
+.calculator .field input,
+.calculator .field select{
+  background:#fff;
+}
+
+.fare{
+  font-size:42px;
+  font-weight:900;
+  color:var(--gold);
+  margin:15px 0 5px;
+}
+
+.note{
+  font-size:12px;
+  color:#aebbc8;
+}
+
+/* REVIEWS */
+
+.stars{
+  color:#f1ad1a;
+  margin-bottom:9px;
+}
+
+.reviewBody p{
+  margin-bottom:13px;
+}
+
+.name{
+  font-weight:800;
+  font-size:14px;
+}
+
+/* FAQ */
+
+.faq{
+  max-width:820px;
+  margin:auto;
+}
+
+.faqItem{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:10px;
+  margin:9px 0;
+  overflow:hidden;
+}
+
+.faqQ{
+  width:100%;
+  padding:16px;
+  background:#fff;
+  border:0;
+  text-align:left;
+  font-weight:800;
+  display:flex;
+  justify-content:space-between;
+  cursor:pointer;
+}
+
+.faqA{
+  display:none;
+  padding:0 16px 16px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.faqItem.open .faqA{
+  display:block;
+}
+
+/* CTA */
+
+.cta{
+  background:var(--gold);
+  padding:50px 0;
+}
+
+.ctaInner{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+
+.cta h2{
+  font-size:35px;
+  line-height:1.1;
+}
+
+/* FOOTER */
+
+footer{
+  background:#040c15;
+  color:#aeb9c5;
+  padding:52px 0 20px;
+}
+
+.footGrid{
+  display:grid;
+  grid-template-columns:1.5fr 1fr 1fr;
+  gap:40px;
+}
+
+.footGrid h3,
+.footGrid h4{
+  color:#fff;
+  margin-bottom:10px;
+}
+
+.footGrid p,
+.footGrid a{
+  font-size:14px;
+}
+
+.footGrid a:hover{
+  color:var(--gold);
+}
+
+.bottom{
+  border-top:1px solid #ffffff12;
+  margin-top:30px;
+  padding-top:18px;
+  text-align:center;
+  font-size:12px;
+}
+
+/* WHATSAPP */
+
+.whatsapp{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:#25d366;
+  color:#fff;
+  display:grid;
+  place-items:center;
+  font-size:26px;
+  z-index:30;
+  box-shadow:0 7px 22px #0004;
+}
+
+/* TOAST */
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:22px;
+  transform:translate(-50%,100px);
+  background:#101c2b;
+  color:#fff;
+  padding:12px 17px;
+  border-radius:8px;
+  z-index:50;
+  transition:.3s;
+}
+
+.toast.show{
+  transform:translate(-50%,0);
+}
+
+/* MOBILE */
+
+@media(max-width:850px){
+
+  .links{
+    display:none;
+    position:absolute;
+    top:74px;
+    left:0;
+    right:0;
+    background:var(--navy);
+    padding:20px;
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .links.show{
+    display:flex;
+  }
+
+  .menu{
+    display:block;
+  }
+
+  .heroGrid,
+  .split,
+  .calcGrid{
+    grid-template-columns:1fr;
+  }
+
+  .cards,
+  .routeGrid,
+  .fleetGrid,
+  .reviewGrid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media(max-width:560px){
+
+  .hero{
+    padding-top:120px;
+  }
+
+  .grid2{
+    grid-template-columns:1fr;
+  }
+
+  .field.full{
+    grid-column:auto;
+  }
+
+  .cards,
+  .routeGrid,
+  .fleetGrid,
+  .reviewGrid,
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .ctaInner{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .cta h2{
+    font-size:29px;
+  }
+
+  .splitImage{
+    min-height:280px;
+  }
+
+  .footGrid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+
+<header>
+
+<div class="wrap nav">
+
+<a class="logo" href="#home">
+DANT<b>TEL</b>
+</a>
+
+<nav class="links" id="links">
+
+<a href="#home">Home</a>
+<a href="#services">Services</a>
+<a href="#about">About</a>
+<a href="#routes">Routes</a>
+<a href="#fleet">Fleet</a>
+<a href="#contact">Contact</a>
+
+</nav>
+
+<button class="menu" onclick="toggleMenu()">☰</button>
+
+</div>
+
+</header>
+
+
+<!-- HERO -->
+
+<section class="hero" id="home">
+
+<div class="wrap heroGrid">
+
+<div>
+
+<div class="pill">
+SAFE • RELIABLE • COMFORTABLE
+</div>
+
+<h1>
+Move with <span>confidence.</span><br>
+Arrive with ease.
+</h1>
+
+<p class="heroText">
+DANTTEL Transport connects people and places with dependable passenger transport, vehicle hire, airport transfers and corporate mobility services.
+</p>
+
+<div class="actions">
+
+<a class="btn gold" href="#booking">
+Book a Trip →
+</a>
+
+<a
+class="btn"
+style="border:1px solid #ffffff55;color:#fff"
+href="tel:08026572578">
+
+Call DANTTEL
+
+</a>
+
+</div>
+
+</div>
+
+
+<!-- BOOKING -->
+
+<div class="bookCard" id="booking">
+
+<h2>Book Your Journey</h2>
+
+<small>
+Send your trip details and our team will contact you.
+</small>
+
+<form onsubmit="book(event)">
+
+<div class="grid2">
+
+<div class="field">
+
+<label>Pickup</label>
+
+<input
+id="pickup"
+required
+placeholder="e.g. Lagos">
+
+</div>
+
+
+<div class="field">
+
+<label>Destination</label>
+
+<input
+id="destination"
+required
+placeholder="e.g. Abuja">
+
+</div>
+
+
+<div class="field">
+
+<label>Travel date</label>
+
+<input
+id="date"
+type="date"
+required>
+
+</div>
+
+
+<div class="field">
+
+<label>Passengers</label>
+
+<select id="passengers">
+
+<option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+<option>5+</option>
+
+</select>
+
+</div>
+
+
+<div class="field full">
+
+<label>Service</label>
+
+<select id="service">
+
+<option>Intercity Transport</option>
+<option>Airport Transfer</option>
+<option>Car Hire</option>
+<option>Corporate Transport</option>
+
+</select>
+
+</div>
+
+
+<div class="field full">
+
+<label>Phone number</label>
+
+<input
+id="phone"
+required
+placeholder="Your phone number">
+
+</div>
+
+
+<div class="field full">
+
+<button
+class="btn dark"
+style="width:100%">
+
+Request Booking
+
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- SERVICES -->
+
+<section class="section" id="services">
+
+<div class="wrap">
+
+<div class="heading">
+
+<div class="eyebrow">
+What we do
+</div>
+
+<h2>
+Transport built around your journey
+</h2>
+
+<p>
+From everyday travel to planned corporate movement, DANTTEL keeps your journey simple.
+</p>
+
+</div>
+
+
+<div class="cards">
+
+<div class="card">
+
+<div class="ico">🚌</div>
+
+<h3>
+Passenger Transport
+</h3>
+
+<p>
+Comfortable and dependable trips for individuals, families and groups.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<div class="ico">🚕</div>
+
+<h3>
+Car Hire
+</h3>
+
+<p>
+Flexible vehicle hire for personal travel, events, business and special occasions.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<div class="ico">✈️</div>
+
+<h3>
+Airport Transfers
+</h3>
+
+<p>
+Convenient pickup and drop-off services designed around your flight schedule.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<div class="ico">🏢</div>
+
+<h3>
+Corporate Mobility
+</h3>
+
+<p>
+Reliable staff movement and business transportation solutions for organizations.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<div class="ico">📍</div>
+
+<h3>
+Intercity Routes
+</h3>
+
+<p>
+Plan trips between major cities with straightforward booking and support.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<div class="ico">🚘</div>
+
+<h3>
+Vehicle Services
+</h3>
+
+<p>
+Ask our team about vehicle sales and transport-related mobility services.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- WHY DANTTEL -->
+
+<section class="section darkSection" id="about">
+
+<div class="wrap">
+
+<div class="heading">
+
+<div class="eyebrow">
+Why DANTTEL
+</div>
+
+<h2>
+A better way to move
+</h2>
+
+<p>
+We focus on dependable service, clear communication and a comfortable travel experience.
+</p>
+
+</div>
+
+
+<div class="stats">
+
+<div class="stat">
+
+<strong>24/7</strong>
+
+<span>
+Booking support
+</span>
+
+</div>
+
+
+<div class="stat">
+
+<strong>6+</strong>
+
+<span>
+Service options
+</span>
+
+</div>
+
+
+<div class="stat">
+
+<strong>100%</strong>
+
+<span>
+Journey focused
+</span>
+
+</div>
+
+
+<div class="stat">
+
+<strong>2</strong>
+
+<span>
+Direct phone lines
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ABOUT -->
+
+<section class="section">
+
+<div class="wrap split">
+
+<div class="splitImage"></div>
+
+
+<div>
+
+<div class="eyebrow">
+About DANTTEL
+</div>
+
+<h2
+style="font-size:40px;line-height:1.15;margin:7px 0 12px">
+
+Your journey matters from pickup to arrival.
+
+</h2>
+
+<p style="color:var(--muted)">
+
+DANTTEL is a transport brand focused on making movement easier for passengers, businesses and families. Whether you are travelling across town or planning an intercity trip, our goal is to give you a smooth and dependable experience.
+
+</p>
+
+
+<div class="checklist">
+
+<div>
+<span>✓</span>
+Professional service
+</div>
+
+<div>
+<span>✓</span>
+Comfort-focused travel
+</div>
+
+<div>
+<span>✓</span>
+Simple booking process
+</div>
+
+<div>
+<span>✓</span>
+Responsive customer support
+</div>
+
+</div>
+
+
+<a class="btn dark" href="#contact">
+Contact DANTTEL
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ROUTES -->
+
+<section class="section" id="routes">
+
+<div class="wrap">
+
+<div class="heading">
+
+<div class="eyebrow">
+Popular routes
+</div>
+
+<h2>
+Plan your next trip
+</h2>
+
+<p>
+Example routes can be replaced with your company's actual destinations.
+</p>
+
+</div>
+
+
+<div class="routeGrid">
+
+<div class="route">
+
+<div
+class="pic"
+style="background-image:url('https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=900&q=80')">
+</div>
+
+<div class="routeBody">
+
+<h3>
+Lagos → Abuja
+</h3>
+
+<p>
+Intercity travel with planned pickup and passenger support.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="route">
+
+<div
+class="pic"
+style="background-image:url('https://images.unsplash.com/photo-1549317661-bd32c8ce44db?auto=format&fit=crop&w=900&q=80')">
+</div>
+
+<div class="routeBody">
+
+<h3>
+Lagos → Ibadan
+</h3>
+
+<p>
+A convenient option for business, family and personal travel.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="route">
+
+<div
+class="pic"
+style="background-image:url('https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=900&q=80')">
+</div>
+
+<div class="routeBody">
+
+<h3>
+Custom Route
+</h3>
+
+<p>
+Tell us your pickup and destination and request a quote.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- FLEET -->
+
+<section class="section" id="fleet">
+
+<div class="wrap">
+
+<div class="heading">
+
+<div class="eyebrow">
+Our fleet
+</div>
+
+<h2>
+Choose the ride for your journey
+</h2>
+
+<p>
+Sample fleet cards ready for your real vehicle photos and specifications.
+</p>
+
+</div>
+
+
+<div class="fleetGrid">
+
+
+<div class="fleet">
+
+<div
+class="pic"
+style="background-image:url('https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=900&q=80')">
+</div>
+
+<div class="fleetBody">
+
+<h3>
+Executive Car
+</h3>
+
+<p>
+Ideal for airport transfers, business and private trips.
+</p>
+
+<div class="tags">
+
+<span class="tag">
+1–4 passengers
+</span>
+
+<span class="tag">
+Comfort
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="fleet">
+
+<div
+class="pic"
+style="background-image:url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=900&q=80')">
+</div>
+
+<div class="fleetBody">
+
+<h3>
+Passenger Bus
+</h3>
+
+<p>
+Suitable for group and intercity transportation.
+</p>
+
+<div class="tags">
+
+<span class="tag">
+Groups
+</span>
+
+<span class="tag">
+Intercity
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="fleet">
+
+<div
+class="pic"
+style="background-image:url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=900&q=80')">
+</div>
+
+<div class="fleetBody">
+
+<h3>
+Van / Shuttle
+</h3>
+
+<p>
+Practical mobility for teams, families and events.
+</p>
+
+<div class="tags">
+
+<span class="tag">
+Flexible
+</span>
+
+<span class="tag">
+Groups
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- FARE CALCULATOR -->
+
+<section class="section">
+
+<div class="wrap calculator">
+
+<div class="calcGrid">
+
+
+<div>
+
+<div
+class="eyebrow"
+style="color:#ffd77e">
+
+Fare estimator
+
+</div>
+
+<h2
+style="font-size:38px;line-height:1.15;margin:7px 0">
+
+Get an instant trip estimate.
+
+</h2>
+
+<p style="color:#bdc8d4">
+
+This is a demo estimate. Final fares can depend on route, date, vehicle and trip requirements.
+
+</p>
+
+<div
+class="fare"
+id="fare">
+
+₦5,000
+
+</div>
+
+<div class="note">
+Estimated starting fare
+</div>
+
+</div>
+
+
+<div>
+
+<div class="grid2">
+
+
+<div class="field">
+
+<label>
+Trip type
+</label>
+
+<select
+id="tripType"
+onchange="estimate()">
+
+<option value="1">
+Local trip
+</option>
+
+<option value="1.8">
+Intercity
+</option>
+
+<option value="1.4">
+Airport transfer
+</option>
+
+<option value="2">
+Private hire
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Passengers
+</label>
+
+<select
+id="calcPassengers"
+onchange="estimate()">
+
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4+</option>
+
+</select>
+
+</div>
+
+
+<div class="field full">
+
+<label>
+Distance
+</label>
+
+<select
+id="distance"
+onchange="estimate()">
+
+<option value="1">
+Short
+</option>
+
+<option value="1.5">
+Medium
+</option>
+
+<option value="2.2">
+Long
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- TESTIMONIALS -->
+
+<section class="section">
+
+<div class="wrap">
+
+<div class="heading">
+
+<div class="eyebrow">
+Customer experience
+</div>
+
+<h2>
+What passengers can expect
+</h2>
+
+</div>
+
+
+<div class="reviewGrid">
+
+
+<div class="review">
+
+<div class="reviewBody">
+
+<div class="stars">
+★★★★★
+</div>
+
+<p>
+“A clean, simple and dependable transport experience from booking to arrival.”
+</p>
+
+<div class="name">
+— DANTTEL Customer
+</div>
+
+</div>
+
+</div>
+
+
+<div class="review">
+
+<div class="reviewBody">
+
+<div class="stars">
+★★★★★
+</div>
+
+<p>
+“The booking process was straightforward and communication was clear.”
+</p>
+
+<div class="name">
+— Business Traveller
+</div>
+
+</div>
+
+</div>
+
+
+<div class="review">
+
+<div class="reviewBody">
+
+<div class="stars">
+★★★★★
+</div>
+
+<p>
+“A convenient option when I need transport for a group.”
+</p>
+
+<div class="name">
+— Group Traveller
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- FAQ -->
+
+<section class="section" id="faq">
+
+<div class="wrap">
+
+<div class="heading">
+
+<div class="eyebrow">
+FAQ
+</div>
+
+<h2>
+Frequently asked questions
+</h2>
+
+</div>
+
+
+<div class="faq">
+
+
+<div class="faqItem">
+
+<button class="faqQ">
+
+How do I book a trip?
+
+<span>+</span>
+
+</button>
+
+<div class="faqA">
+
+Use the booking form above or call either DANTTEL phone number. Our team can confirm the details with you.
+
+</div>
+
+</div>
+
+
+<div class="faqItem">
+
+<button class="faqQ">
+
+Can I request an airport transfer?
+
+<span>+</span>
+
+</button>
+
+<div class="faqA">
+
+Yes. Select Airport Transfer in the booking form and include your pickup and destination details.
+
+</div>
+
+</div>
+
+
+<div class="faqItem">
+
+<button class="faqQ">
+
+Do you handle group transportation?
+
+<span>+</span>
+
+</button>
+
+<div class="faqA">
+
+Yes. DANTTEL can be used for group, shuttle and event transportation requests.
+
+</div>
+
+</div>
+
+
+<div class="faqItem">
+
+<button class="faqQ">
+
+How is the fare calculated?
+
+<span>+</span>
+
+</button>
+
+<div class="faqA">
+
+The estimator uses trip type, approximate distance and passenger count. It is only a starting estimate; the confirmed fare should come from DANTTEL.
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- CONTACT -->
+
+<section class="cta" id="contact">
+
+<div class="wrap ctaInner">
+
+<div>
+
+<h2>
+Ready to move?
+</h2>
+
+<p>
+Book your next journey with DANTTEL Transport.
+</p>
+
+</div>
+
+
+<div class="actions">
+
+<a
+class="btn dark"
+href="tel:08026572578">
+
+08026572578
+
+</a>
+
+<a
+class="btn dark"
+href="tel:08036508712">
+
+08036508712
+
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+<div class="wrap">
+
+<div class="footGrid">
+
+
+<div>
+
+<h3 class="logo">
+DANT<b>TEL</b>
+</h3>
+
+<p>
+Reliable transport for everyday journeys, business travel and group movement.
+</p>
+
+</div>
+
+
+<div>
+
+<h4>
+Quick links
+</h4>
+
+<p>
+<a href="#services">
+Services
+</a>
+</p>
+
+<p>
+<a href="#routes">
+Routes
+</a>
+</p>
+
+<p>
+<a href="#fleet">
+Fleet
+</a>
+</p>
+
+<p>
+<a href="#faq">
+FAQ
+</a>
+</p>
+
+</div>
+
+
+<div>
+
+<h4>
+Contact
+</h4>
+
+<p>
+<a href="tel:08026572578">
+08026572578
+</a>
+</p>
+
+<p>
+<a href="tel:08036508712">
+08036508712
+</a>
+</p>
+
+<p>
+<a
+href="https://wa.me/2348026572578"
+target="_blank">
+
+WhatsApp us
+
+</a>
+</p>
+
+</div>
+
+</div>
+
+
+<div class="bottom">
+
+© <span id="year"></span>
+DANTTEL Transport.
+All rights reserved.
+
+</div>
+
+</div>
+
+</footer>
+
+
+<!-- WHATSAPP -->
+
+<a
+class="whatsapp"
+href="https://wa.me/2348026572578?text=Hello%20DANTTEL%2C%20I%20want%20to%20make%20a%20transport%20booking."
+target="_blank">
+
+✆
+
+</a>
+
+
+<div
+class="toast"
+id="toast">
+</div>
+
+
+<script>
+
+function toggleMenu(){
+
+document
+.getElementById("links")
+.classList
+.toggle("show");
+
+}
+
+
+document
+.querySelectorAll(".links a")
+.forEach(a=>{
+
+a.onclick=()=>{
+
+document
+.getElementById("links")
+.classList
+.remove("show");
+
+};
+
+});
+
+
+/* FAQ */
+
+document
+.querySelectorAll(".faqQ")
+.forEach(q=>{
+
+q.addEventListener("click",()=>{
+
+let item=q.parentElement;
+
+item.classList.toggle("open");
+
+q.querySelector("span").textContent=
+item.classList.contains("open")
+?"−"
+:"+";
+
+});
+
+});
+
+
+/* FARE CALCULATOR */
+
+function estimate(){
+
+let type=
++document.getElementById("tripType").value;
+
+let people=
++document.getElementById("calcPassengers").value;
+
+let dist=
++document.getElementById("distance").value;
+
+let base=
+5000*type*dist;
+
+let extra=
+Math.max(0,people-1)*1000;
+
+let total=
+Math.round(base+extra);
+
+document.getElementById("fare").textContent=
+"₦"+total.toLocaleString();
+
+}
+
+
+/* TOAST */
+
+function toast(message){
+
+let t=
+document.getElementById("toast");
+
+t.textContent=message;
+
+t.classList.add("show");
+
+setTimeout(()=>{
+
+t.classList.remove("show");
+
+},3500);
+
+}
+
+
+/* BOOKING */
+
+function book(e){
+
+e.preventDefault();
+
+let pickup=
+document.getElementById("pickup").value;
+
+let destination=
+document.getElementById("destination").value;
+
+let date=
+document.getElementById("date").value;
+
+let phone=
+document.getElementById("phone").value;
+
+let service=
+document.getElementById("service").value;
+
+let people=
+document.getElementById("passengers").value;
+
+
+let message=
+`Hello DANTTEL, I want to request a booking.
+
+Pickup: ${pickup}
+Destination: ${destination}
+Date: ${date}
+Passengers: ${people}
+Service: ${service}
+My phone: ${phone}`;
+
+
+window.open(
+"https://wa.me/2348026572578?text="
++
+encodeURIComponent(message),
+"_blank"
+);
+
+toast(
+"Opening WhatsApp with your booking details…"
+);
+
+}
+
+
+/* YEAR */
+
+document.getElementById("year").textContent=
+new Date().getFullYear();
+
+
+/* MINIMUM DATE */
+
+document.getElementById("date").min=
+new Date().toISOString().split("T")[0];
+
+
+/* INITIAL FARE */
+
+estimate();
+
+</script>
+
+</body>
+</html>

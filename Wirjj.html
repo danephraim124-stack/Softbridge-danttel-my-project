@@ -1,0 +1,721 @@
+mkdir danttel-connect
+cd danttel-connect
+
+npm init -y
+npm install express cors dotenv bcryptjs jsonwebtoken pg zod
+npm install -D nodemonPORT=5000
+
+DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/danttel
+
+JWT_SECRET=CHANGE_THIS_TO_A_LONG_RANDOM_SECRET
+
+NODE_ENV=developmentCREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    phone VARCHAR(30),
+    avatar_url TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE circles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL,
+    owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE circle_members (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    circle_id UUID NOT NULL REFERENCES circles(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    role VARCHAR(20) NOT NULL DEFAULT 'member',
+    joined_at TIMESTAMPTZ DEFAULT NOW(),
+
+    UNIQUE(circle_id, user_id)
+);
+
+CREATE TABLE location_shares (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    circle_id UUID NOT NULL REFERENCES circles(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    started_at TIMESTAMPTZ DEFAULT NOW(),
+    stopped_at TIMESTAMPTZ
+);
+
+CREATE TABLE locations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    circle_id UUID NOT NULL REFERENCES circles(id) ON DELETE CASCADE,
+
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL,
+
+    accuracy DOUBLE PRECISION,
+    speed DOUBLE PRECISION,
+    heading DOUBLE PRECISION,
+
+    recorded_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX locations_circle_idx
+ON locations(circle_id);
+
+CREATE INDEX locations_user_idx
+ON locations(user_id);
+
+CREATE INDEX locations_recorded_idx
+ON locations(recorded_at);
+
+CREATE TABLE alerts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    circle_id UUID REFERENCES circles(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+
+    type VARCHAR(50) NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    message TEXT,
+
+    is_read BOOLEAN DEFAULT FALSE,
+
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE emergency_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    circle_id UUID REFERENCES circles(id) ON DELETE CASCADE,
+
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+
+    status VARCHAR(30) DEFAULT 'active',
+
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    resolved_at TIMESTAMPTZ
+);
+
+CREATE TABLE devices (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+    device_name VARCHAR(100),
+    push_token TEXT,
+
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    last_seen_at TIMESTAMPTZ DEFAULT NOW()
+);const { Pool } = require("pg");
+
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL
+});
+
+pool.on("error", (err) => {
+    console.error("Unexpected database error:", err);
+});
+
+module.exports = pool;const jwt = require("jsonwebtoken");
+
+function auth(req, res, next) {
+    try {
+        const header = req.headers.authorization;
+
+        if (!header || !header.startsWith("Bearer ")) {
+            return res.status(401).json({
+                error: "Authentication required"
+            });
+        }
+
+        const token = header.split(" ")[1];
+
+        const decoded = jwt.verify(
+            token,
+            process.env.JWT_SECRET
+        );
+
+        req.user = decoded;
+
+        next();
+
+    } catch (error) {
+        return res.status(401).json({
+            error: "Invalid or expired token"
+        });
+    }
+}
+
+module.exports = auth;const express = require("express");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { z } = require("zod");
+
+const pool = require("../db");
+
+const router = express.Router();
+
+const registerSchema = z.object({
+    name: z.string().min(2).max(100),
+    email: z.string().email(),
+    password: z.string().min(8).max(100),
+    phone: z.string().max(30).optional()
+});
+
+function createToken(user) {
+    return jwt.sign(
+        {
+            id: user.id,
+            email: user.email
+        },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: "15m"
+        }
+    );
+}
+
+router.post("/register", async (req, res) => {
+    try {
+        const data = registerSchema.parse(req.body);
+
+        const existing = await pool.query(
+            "SELECT id FROM users WHERE email = $1",
+            [data.email.toLowerCase()]
+        );
+
+        if (existing.rows.length > 0) {
+            return res.status(409).json({
+                error: "Email already registered"
+            });
+        }
+
+        const passwordHash = await bcrypt.hash(
+            data.password,
+            12
+        );
+
+        const result = await pool.query(
+            `INSERT INTO users
+            (name, email, password_hash, phone)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id, name, email, phone, created_at`,
+            [
+                data.name,
+                data.email.toLowerCase(),
+                passwordHash,
+                data.phone || null
+            ]
+        );
+
+        const user = result.rows[0];
+
+        const token = createToken(user);
+
+        res.status(201).json({
+            message: "Account created",
+            token,
+            user
+        });
+
+    } catch (error) {
+
+        if (error.name === "ZodError") {
+            return res.status(400).json({
+                error: "Invalid registration data"
+            });
+        }
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Server error"
+        });
+    }
+});
+
+router.post("/login", async (req, res) => {
+    try {
+
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({
+                error: "Email and password are required"
+            });
+        }
+
+        const result = await pool.query(
+            "SELECT * FROM users WHERE email = $1",
+            [email.toLowerCase()]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(401).json({
+                error: "Invalid email or password"
+            });
+        }
+
+        const user = result.rows[0];
+
+        const valid = await bcrypt.compare(
+            password,
+            user.password_hash
+        );
+
+        if (!valid) {
+            return res.status(401).json({
+                error: "Invalid email or password"
+            });
+        }
+
+        const token = createToken(user);
+
+        delete user.password_hash;
+
+        res.json({
+            message: "Login successful",
+            token,
+            user
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Server error"
+        });
+    }
+});
+
+module.exports = router;const express = require("express");
+const pool = require("../db");
+const auth = require("../middleware/auth");
+
+const router = express.Router();
+
+router.get("/me", auth, async (req, res) => {
+
+    try {
+
+        const result = await pool.query(
+            `SELECT id, name, email, phone, avatar_url, created_at
+             FROM users
+             WHERE id = $1`,
+            [req.user.id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                error: "User not found"
+            });
+        }
+
+        res.json({
+            user: result.rows[0]
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Server error"
+        });
+    }
+});
+
+module.exports = router;const express = require("express");
+const pool = require("../db");
+const auth = require("../middleware/auth");
+
+const router = express.Router();
+
+router.post("/", auth, async (req, res) => {
+
+    try {
+
+        const { name } = req.body;
+
+        if (!name || name.length < 2) {
+            return res.status(400).json({
+                error: "Circle name is required"
+            });
+        }
+
+        const client = await pool.connect();
+
+        try {
+
+            await client.query("BEGIN");
+
+            const circleResult = await client.query(
+                `INSERT INTO circles
+                (name, owner_id)
+                VALUES ($1, $2)
+                RETURNING *`,
+                [name, req.user.id]
+            );
+
+            const circle = circleResult.rows[0];
+
+            await client.query(
+                `INSERT INTO circle_members
+                (circle_id, user_id, role)
+                VALUES ($1, $2, 'owner')`,
+                [circle.id, req.user.id]
+            );
+
+            await client.query("COMMIT");
+
+            res.status(201).json({
+                circle
+            });
+
+        } catch (error) {
+
+            await client.query("ROLLBACK");
+            throw error;
+
+        } finally {
+            client.release();
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Could not create circle"
+        });
+    }
+});
+
+router.get("/", auth, async (req, res) => {
+
+    try {
+
+        const result = await pool.query(
+            `SELECT
+                c.id,
+                c.name,
+                c.owner_id,
+                c.created_at,
+                cm.role
+             FROM circles c
+             JOIN circle_members cm
+               ON cm.circle_id = c.id
+             WHERE cm.user_id = $1
+             ORDER BY c.created_at DESC`,
+            [req.user.id]
+        );
+
+        res.json({
+            circles: result.rows
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Could not load circles"
+        });
+    }
+});
+
+module.exports = router;const express = require("express");
+const { z } = require("zod");
+
+const pool = require("../db");
+const auth = require("../middleware/auth");
+
+const router = express.Router();
+
+const locationSchema = z.object({
+    circleId: z.string().uuid(),
+    latitude: z.number().min(-90).max(90),
+    longitude: z.number().min(-180).max(180),
+    accuracy: z.number().nonnegative().optional(),
+    speed: z.number().nonnegative().optional(),
+    heading: z.number().optional()
+});
+
+async function isCircleMember(userId, circleId) {
+
+    const result = await pool.query(
+        `SELECT id
+         FROM circle_members
+         WHERE user_id = $1
+         AND circle_id = $2`,
+        [userId, circleId]
+    );
+
+    return result.rows.length > 0;
+}
+
+router.post("/share/start", auth, async (req, res) => {
+
+    try {
+
+        const { circleId } = req.body;
+
+        const member = await isCircleMember(
+            req.user.id,
+            circleId
+        );
+
+        if (!member) {
+            return res.status(403).json({
+                error: "You are not a member of this circle"
+            });
+        }
+
+        await pool.query(
+            `INSERT INTO location_shares
+            (circle_id, user_id, enabled)
+            VALUES ($1, $2, TRUE)
+            ON CONFLICT DO NOTHING`,
+            [circleId, req.user.id]
+        );
+
+        res.json({
+            message: "Location sharing enabled"
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Could not enable location sharing"
+        });
+    }
+});
+
+router.post("/", auth, async (req, res) => {
+
+    try {
+
+        const data = locationSchema.parse(req.body);
+
+        const member = await isCircleMember(
+            req.user.id,
+            data.circleId
+        );
+
+        if (!member) {
+            return res.status(403).json({
+                error: "You are not a member of this circle"
+            });
+        }
+
+        const sharing = await pool.query(
+            `SELECT id
+             FROM location_shares
+             WHERE user_id = $1
+             AND circle_id = $2
+             AND enabled = TRUE`,
+            [req.user.id, data.circleId]
+        );
+
+        if (sharing.rows.length === 0) {
+            return res.status(403).json({
+                error: "Location sharing is not enabled"
+            });
+        }
+
+        const result = await pool.query(
+            `INSERT INTO locations
+            (
+                user_id,
+                circle_id,
+                latitude,
+                longitude,
+                accuracy,
+                speed,
+                heading
+            )
+            VALUES ($1,$2,$3,$4,$5,$6,$7)
+            RETURNING *`,
+            [
+                req.user.id,
+                data.circleId,
+                data.latitude,
+                data.longitude,
+                data.accuracy || null,
+                data.speed || null,
+                data.heading || null
+            ]
+        );
+
+        res.status(201).json({
+            location: result.rows[0]
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(400).json({
+            error: "Invalid location data"
+        });
+    }
+});
+
+router.post("/share/stop", auth, async (req, res) => {
+
+    try {
+
+        const { circleId } = req.body;
+
+        await pool.query(
+            `UPDATE location_shares
+             SET enabled = FALSE,
+                 stopped_at = NOW()
+             WHERE user_id = $1
+             AND circle_id = $2`,
+            [req.user.id, circleId]
+        );
+
+        res.json({
+            message: "Location sharing disabled"
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Could not disable location sharing"
+        });
+    }
+});
+
+router.get("/circle/:circleId", auth, async (req, res) => {
+
+    try {
+
+        const member = await isCircleMember(
+            req.user.id,
+            req.params.circleId
+        );
+
+        if (!member) {
+            return res.status(403).json({
+                error: "Access denied"
+            });
+        }
+
+        const result = await pool.query(
+            `SELECT DISTINCT ON (l.user_id)
+                l.id,
+                l.user_id,
+                l.latitude,
+                l.longitude,
+                l.accuracy,
+                l.speed,
+                l.heading,
+                l.recorded_at,
+                u.name,
+                u.avatar_url
+             FROM locations l
+             JOIN users u ON u.id = l.user_id
+             WHERE l.circle_id = $1
+             ORDER BY l.user_id, l.recorded_at DESC`,
+            [req.params.circleId]
+        );
+
+        res.json({
+            locations: result.rows
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Could not load locations"
+        });
+    }
+});
+
+module.exports = router;require("dotenv").config();
+
+const express = require("express");
+const cors = require("cors");
+
+const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/users");
+const circleRoutes = require("./routes/circles");
+const locationRoutes = require("./routes/locations");
+
+const app = express();
+
+app.use(cors());
+
+app.use(express.json({
+    limit: "100kb"
+}));
+
+app.get("/", (req, res) => {
+    res.json({
+        name: "Danttel Connect API",
+        version: "1.0.0",
+        status: "online"
+    });
+});
+
+app.get("/health", (req, res) => {
+    res.json({
+        status: "healthy"
+    });
+});
+
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/circles", circleRoutes);
+app.use("/api/locations", locationRoutes);
+
+app.use((req, res) => {
+    res.status(404).json({
+        error: "Endpoint not found"
+    });
+});
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+    console.log(`
+====================================
+      DANTTEL CONNECT API
+====================================
+
+Server: http://localhost:${PORT}
+
+Auth:
+POST /api/auth/register
+POST /api/auth/login
+
+Users:
+GET /api/users/me
+
+Circles:
+POST /api/circles
+GET /api/circles
+
+Locations:
+POST /api/locations/share/start
+POST /api/locations/share/stop
+POST /api/locations
+GET  /api/locations/circle/:circleId
+
+====================================
+`);
+});

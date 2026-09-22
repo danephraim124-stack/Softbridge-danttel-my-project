@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Danttel Wallet</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+  background:#f4f7fb;
+  color:#172033;
+}
+
+button,input{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+  border:0;
+}
+
+.app{
+  min-height:100vh;
+}
+
+/* AUTH */
+.auth{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:linear-gradient(135deg,#06152f,#087f5b);
+}
+
+.auth-box{
+  width:100%;
+  max-width:420px;
+  background:white;
+  border-radius:24px;
+  padding:30px;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+
+.logo{
+  font-size:30px;
+  font-weight:800;
+  color:#087f5b;
+}
+
+.logo span{
+  color:#111827;
+}
+
+.auth-box h2{
+  margin-top:25px;
+  margin-bottom:8px;
+}
+
+.muted{
+  color:#6b7280;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.form-group{
+  margin-top:18px;
+}
+
+.form-group label{
+  display:block;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:7px;
+}
+
+.form-group input{
+  width:100%;
+  padding:14px;
+  border:1px solid #d9dee8;
+  border-radius:12px;
+  outline:none;
+}
+
+.form-group input:focus{
+  border-color:#087f5b;
+}
+
+.primary{
+  width:100%;
+  margin-top:20px;
+  padding:14px;
+  border-radius:12px;
+  background:#087f5b;
+  color:white;
+  font-weight:bold;
+}
+
+.primary:hover{
+  opacity:.9;
+}
+
+.switch{
+  text-align:center;
+  margin-top:18px;
+  font-size:14px;
+}
+
+.switch a{
+  color:#087f5b;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* MAIN */
+.hidden{
+  display:none!important;
+}
+
+.topbar{
+  height:70px;
+  background:white;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 25px;
+  border-bottom:1px solid #e8ebf0;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+
+.topbar .logo{
+  font-size:25px;
+}
+
+.user-mini{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.avatar{
+  width:38px;
+  height:38px;
+  background:#087f5b;
+  color:white;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+}
+
+.layout{
+  display:flex;
+  min-height:calc(100vh - 70px);
+}
+
+.sidebar{
+  width:230px;
+  background:#06152f;
+  color:white;
+  padding:25px 15px;
+}
+
+.nav-btn{
+  width:100%;
+  text-align:left;
+  padding:13px;
+  margin-bottom:7px;
+  background:transparent;
+  color:#dce5f5;
+  border-radius:10px;
+}
+
+.nav-btn:hover,
+.nav-btn.active{
+  background:#087f5b;
+  color:white;
+}
+
+.logout{
+  margin-top:30px;
+  color:#ffb4b4;
+}
+
+.content{
+  flex:1;
+  padding:30px;
+  max-width:1300px;
+}
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.page-title{
+  font-size:27px;
+  margin-bottom:5px;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+  margin-top:25px;
+}
+
+.card{
+  background:white;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 5px 20px rgba(0,0,0,.05);
+}
+
+.balance-card{
+  background:linear-gradient(135deg,#06152f,#087f5b);
+  color:white;
+}
+
+.balance{
+  font-size:34px;
+  font-weight:800;
+  margin:12px 0;
+}
+
+.card-label{
+  font-size:13px;
+  color:#737b89;
+}
+
+.balance-card .card-label{
+  color:#dce5f5;
+}
+
+.action-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  margin-top:20px;
+}
+
+.action{
+  background:white;
+  padding:20px;
+  border-radius:16px;
+  text-align:center;
+  box-shadow:0 5px 20px rgba(0,0,0,.05);
+  cursor:pointer;
+}
+
+.action-icon{
+  font-size:28px;
+  margin-bottom:8px;
+}
+
+.section{
+  margin-top:30px;
+}
+
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.transactions{
+  background:white;
+  border-radius:18px;
+  overflow:hidden;
+}
+
+.transaction{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:17px;
+  border-bottom:1px solid #edf0f4;
+}
+
+.transaction:last-child{
+  border-bottom:0;
+}
+
+.tx-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.tx-icon{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#e8f7f1;
+}
+
+.tx-title{
+  font-weight:bold;
+  font-size:14px;
+}
+
+.tx-date{
+  font-size:12px;
+  color:#8a93a2;
+  margin-top:4px;
+}
+
+.income{
+  color:#07865e;
+  font-weight:bold;
+}
+
+.expense{
+  color:#d83b3b;
+  font-weight:bold;
+}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:100;
+}
+
+.modal-box{
+  width:100%;
+  max-width:430px;
+  background:white;
+  border-radius:20px;
+  padding:25px;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.close{
+  background:#eef1f5;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+}
+
+.message{
+  margin-top:15px;
+  padding:12px;
+  border-radius:10px;
+  display:none;
+  font-size:14px;
+}
+
+.success{
+  display:block;
+  background:#e8f7f1;
+  color:#087f5b;
+}
+
+.error{
+  display:block;
+  background:#fff0f0;
+  color:#c62828;
+}
+
+/* PROFILE */
+.profile-box{
+  max-width:600px;
+}
+
+.profile-row{
+  padding:18px 0;
+  border-bottom:1px solid #e7eaf0;
+}
+
+.profile-row strong{
+  display:block;
+  margin-bottom:5px;
+}
+
+.admin-badge{
+  background:#fff2cf;
+  color:#8b6500;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:11px;
+}
+
+/* MOBILE */
+.mobile-nav{
+  display:none;
+}
+
+@media(max-width:800px){
+
+  .sidebar{
+    display:none;
+  }
+
+  .content{
+    padding:20px 15px 90px;
+  }
+
+  .topbar{
+    padding:0 15px;
+  }
+
+  .cards{
+    grid-template-columns:1fr;
+  }
+
+  .action-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .mobile-nav{
+    position:fixed;
+    display:flex;
+    bottom:0;
+    left:0;
+    right:0;
+    height:65px;
+    background:white;
+    border-top:1px solid #ddd;
+    z-index:50;
+    justify-content:space-around;
+  }
+
+  .mobile-nav button{
+    background:white;
+    font-size:11px;
+    color:#667085;
+  }
+
+  .mobile-nav button.active{
+    color:#087f5b;
+    font-weight:bold;
+  }
+
+  .balance{
+    font-size:30px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- AUTH -->
+<div id="authScreen" class="auth">
+
+  <div class="auth-box">
+
+    <div class="logo">Danttel<span>Wallet</span></div>
+
+    <!-- LOGIN -->
+    <div id="loginForm">
+
+      <h2>Welcome back 👋</h2>
+      <p class="muted">Sign in to your Danttel Wallet.</p>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input id="loginEmail" type="email" placeholder="you@example.com">
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input id="loginPassword" type="password" placeholder="••••••••">
+      </div>
+
+      <button class="primary" onclick="login()">Sign In</button>
+
+      <div id="loginMsg" class="message"></div>
+
+      <div class="switch">
+        Don't have an account?
+        <a onclick="showRegister()">Create one</a>
+      </div>
+
+    </div>
+
+    <!-- REGISTER -->
+    <div id="registerForm" class="hidden">
+
+      <h2>Create account 🚀</h2>
+      <p class="muted">Open your Danttel Wallet account.</p>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input id="regName" type="text" placeholder="Your name">
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input id="regEmail" type="email" placeholder="you@example.com">
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input id="regPassword" type="password" placeholder="Create password">
+      </div>
+
+      <button class="primary" onclick="register()">Create Account</button>
+
+      <div id="registerMsg" class="message"></div>
+
+      <div class="switch">
+        Already have an account?
+        <a onclick="showLogin()">Sign in</a>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- MAIN APP -->
+<div id="app" class="app hidden">
+
+  <header class="topbar">
+
+    <div class="logo">Danttel<span>Wallet</span></div>
+
+    <div class="user-mini">
+      <span id="topName">User</span>
+      <div id="topAvatar" class="avatar">U</div>
+    </div>
+
+  </header>
+
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <button class="nav-btn active" onclick="openPage('dashboard',this)">
+        🏠 Dashboard
+      </button>
+
+      <button class="nav-btn" onclick="openPage('transactions',this)">
+        📜 Transactions
+      </button>
+
+      <button class="nav-btn" onclick="openPage('profile',this)">
+        👤 Profile
+      </button>
+
+      <button class="nav-btn" onclick="openPage('notifications',this)">
+        🔔 Notifications
+      </button>
+
+      <button class="nav-btn logout" onclick="logout()">
+        🚪 Logout
+      </button>
+
+    </aside>
+
+
+    <!-- CONTENT -->
+    <main class="content">
+
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="page active">
+
+        <h1 class="page-title">Good day, <span id="welcomeName">User</span> 👋</h1>
+        <p class="muted">Here's what's happening with your wallet.</p>
+
+        <div class="cards">
+
+          <div class="card balance-card">
+            <div class="card-label">Available Balance</div>
+            <div id="balance" class="balance">₦0.00</div>
+            <div class="card-label">Danttel Wallet</div>
+          </div>
+
+          <div class="card">
+            <div class="card-label">Money Received</div>
+            <div id="received" class="balance" style="color:#087f5b">
+              ₦0.00
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-label">Money Sent</div>
+            <div id="sent" class="balance" style="color:#d83b3b">
+              ₦0.00
+            </div>
+          </div>
+
+        </div>
+
+
+        <div class="action-grid">
+
+          <div class="action" onclick="openModal('addModal')">
+            <div class="action-icon">➕</div>
+            <strong>Add Money</strong>
+          </div>
+
+          <div class="action" onclick="openModal('sendModal')">
+            <div class="action-icon">💸</div>
+            <strong>Send Money</strong>
+          </div>
+
+          <div class="action" onclick="openPage('transactions')">
+            <div class="action-icon">📜</div>
+            <strong>Transactions</strong>
+          </div>
+
+          <div class="action" onclick="openPage('profile')">
+            <div class="action-icon">👤</div>
+            <strong>Profile</strong>
+          </div>
+
+        </div>
+
+
+        <div class="section">
+
+          <div class="section-head">
+            <h3>Recent Transactions</h3>
+            <button onclick="openPage('transactions')" style="background:none;color:#087f5b;font-weight:bold">
+              View all
+            </button>
+          </div>
+
+          <div id="recentTransactions" class="transactions"></div>
+
+        </div>
+
+      </section>
+
+
+      <!-- TRANSACTIONS -->
+      <section id="transactions" class="page">
+
+        <h1 class="page-title">Transactions</h1>
+        <p class="muted">Your wallet activity.</p>
+
+        <div class="section">
+          <div id="allTransactions" class="transactions"></div>
+        </div>
+
+      </section>
+
+
+      <!-- PROFILE -->
+      <section id="profile" class="page">
+
+        <h1 class="page-title">Profile</h1>
+        <p class="muted">Manage your account.</p>
+
+        <div class="section">
+
+          <div class="card profile-box">
+
+            <div class="profile-row">
+              <strong>Full Name</strong>
+              <span id="profileName">User</span>
+            </div>
+
+            <div class="profile-row">
+              <strong>Email</strong>
+              <span id="profileEmail">-</span>
+            </div>
+
+            <div class="profile-row">
+              <strong>Account Type</strong>
+              <span>Personal Wallet</span>
+            </div>
+
+            <div class="profile-row">
+              <strong>Status</strong>
+              <span class="admin-badge">ACTIVE</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- NOTIFICATIONS -->
+      <section id="notifications" class="page">
+
+        <h1 class="page-title">Notifications 🔔</h1>
+        <p class="muted">Important wallet updates.</p>
+
+        <div class="section">
+
+          <div class="card">
+            <strong>Welcome to Danttel Wallet 🎉</strong>
+            <p class="muted" style="margin-top:7px">
+              Your wallet account is ready.
+            </p>
+          </div>
+
+          <br>
+
+          <div class="card">
+            <strong>Demo Mode</strong>
+            <p class="muted" style="margin-top:7px">
+              This version uses simulated money and local browser storage.
+            </p>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav">
+
+    <button class="active" onclick="mobilePage('dashboard',this)">
+      🏠<br>Home
+    </button>
+
+    <button onclick="openModal('sendModal')">
+      💸<br>Send
+    </button>
+
+    <button onclick="openModal('addModal')">
+      ➕<br>Add
+    </button>
+
+    <button onclick="mobilePage('transactions',this)">
+      📜<br>History
+    </button>
+
+    <button onclick="mobilePage('profile',this)">
+      👤<br>Profile
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- ADD MONEY MODAL -->
+<div id="addModal" class="modal hidden">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+      <h2>Add Money</h2>
+      <button class="close" onclick="closeModal('addModal')">✕</button>
+    </div>
+
+    <p class="muted" style="margin-top:7px">
+      Add simulated funds to your wallet.
+    </p>
+
+    <div class="form-group">
+      <label>Amount (₦)</label>
+      <input id="addAmount" type="number" placeholder="5000">
+    </div>
+
+    <button class="primary" onclick="addMoney()">Add Money</button>
+
+    <div id="addMsg" class="message"></div>
+
+  </div>
+
+</div>
+
+
+<!-- SEND MONEY MODAL -->
+<div id="sendModal" class="modal hidden">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+      <h2>Send Money</h2>
+      <button class="close" onclick="closeModal('sendModal')">✕</button>
+    </div>
+
+    <p class="muted" style="margin-top:7px">
+      Simulate sending money to another user.
+    </p>
+
+    <div class="form-group">
+      <label>Recipient</label>
+      <input id="recipient" type="text" placeholder="Recipient name/email">
+    </div>
+
+    <div class="form-group">
+      <label>Amount (₦)</label>
+      <input id="sendAmount" type="number" placeholder="1000">
+    </div>
+
+    <button class="primary" onclick="sendMoney()">Send Money</button>
+
+    <div id="sendMsg" class="message"></div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* ================================
+   DANTTEL WALLET DATABASE
+================================ */
+
+let db = JSON.parse(localStorage.getItem("danttelDB")) || {
+  users: [],
+  currentUser: null
+};
+
+
+/* ================================
+   SAVE DATABASE
+================================ */
+
+function saveDB(){
+  localStorage.setItem("danttelDB", JSON.stringify(db));
+}
+
+
+/* ================================
+   AUTH
+================================ */
+
+function showRegister(){
+
+  document.getElementById("loginForm").classList.add("hidden");
+  document.getElementById("registerForm").classList.remove("hidden");
+
+}
+
+function showLogin(){
+
+  document.getElementById("registerForm").classList.add("hidden");
+  document.getElementById("loginForm").classList.remove("hidden");
+
+}
+
+
+function register(){
+
+  const name =
+    document.getElementById("regName").value.trim();
+
+  const email =
+    document.getElementById("regEmail").value.trim().toLowerCase();
+
+  const password =
+    document.getElementById("regPassword").value;
+
+  const msg =
+    document.getElementById("registerMsg");
+
+
+  if(!name || !email || !password){
+
+    showMessage(msg,"Please fill all fields.","error");
+    return;
+
+  }
+
+  if(password.length < 4){
+
+    showMessage(msg,"Password must contain at least 4 characters.","error");
+    return;
+
+  }
+
+  if(db.users.some(u => u.email === email)){
+
+    showMessage(msg,"An account with this email already exists.","error");
+    return;
+
+  }
+
+
+  const user = {
+
+    id:Date.now(),
+
+    name:name,
+
+    email:email,
+
+    password:password,
+
+    balance:0,
+
+    received:0,
+
+    sent:0,
+
+    transactions:[],
+
+    notifications:[
+
+      {
+        title:"Welcome to Danttel Wallet 🎉",
+        text:"Your wallet has been created."
+      }
+
+    ]
+
+  };
+
+
+  db.users.push(user);
+
+  db.currentUser = user.id;
+
+  saveDB();
+
+  openApp();
+
+}
+
+
+/* ================================
+   LOGIN
+================================ */
+
+function login(){
+
+  const email =
+    document.getElementById("loginEmail").value.trim().toLowerCase();
+
+  const password =
+    document.getElementById("loginPassword").value;
+
+  const msg =
+    document.getElementById("loginMsg");
+
+
+  const user =
+    db.users.find(
+      u => u.email === email && u.password === password
+    );
+
+
+  if(!user){
+
+    showMessage(
+      msg,
+      "Incorrect email or password.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  db.currentUser = user.id;
+
+  saveDB();
+
+  openApp();
+
+}
+
+
+/* ================================
+   OPEN APP
+================================ */
+
+function openApp(){
+
+  document
+    .getElementById("authScreen")
+    .classList.add("hidden");
+
+  document
+    .getElementById("app")
+    .classList.remove("hidden");
+
+  updateUI();
+
+}
+
+
+/* ================================
+   LOGOUT
+================================ */
+
+function logout(){
+
+  db.currentUser = null;
+
+  saveDB();
+
+  location.reload();
+
+}
+
+
+/* ================================
+   CURRENT USER
+================================ */
+
+function getUser(){
+
+  return db.users.find(
+    u => u.id === db.currentUser
+  );
+
+}
+
+
+/* ================================
+   UI
+================================ */
+
+function updateUI(){
+
+  const user = getUser();
+
+  if(!user) return;
+
+
+  document.getElementById("welcomeName").textContent =
+    user.name.split(" ")[0];
+
+  document.getElementById("topName").textContent =
+    user.name;
+
+  document.getElementById("topAvatar").textContent =
+    user.name.charAt(0).toUpperCase();
+
+  document.getElementById("profileName").textContent =
+    user.name;
+
+  document.getElementById("profileEmail").textContent =
+    user.email;
+
+
+  document.getElementById("balance").textContent =
+    money(user.balance);
+
+  document.getElementById("received").textContent =
+    money(user.received);
+
+  document.getElementById("sent").textContent =
+    money(user.sent);
+
+
+  renderTransactions();
+
+}
+
+
+/* ================================
+   MONEY FORMAT
+================================ */
+
+function money(amount){
+
+  return "₦" + Number(amount).toLocaleString(
+    "en-NG",
+    {
+      minimumFractionDigits:2,
+      maximumFractionDigits:2
+    }
+  );
+
+}
+
+
+/* ================================
+   ADD MONEY
+================================ */
+
+function addMoney(){
+
+  const amount =
+    Number(document.getElementById("addAmount").value);
+
+  const msg =
+    document.getElementById("addMsg");
+
+
+  if(!amount || amount <= 0){
+
+    showMessage(
+      msg,
+      "Enter a valid amount.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const user = getUser();
+
+  user.balance += amount;
+
+  user.received += amount;
+
+
+  user.transactions.unshift({
+
+    id:"TX" + Date.now(),
+
+    type:"credit",
+
+    title:"Money Added",
+
+    amount:amount,
+
+    date:new Date().toLocaleString()
+
+  });
+
+
+  saveDB();
+
+  updateUI();
+
+
+  showMessage(
+    msg,
+    money(amount) + " added successfully.",
+    "success"
+  );
+
+
+  document.getElementById("addAmount").value = "";
+
+
+  setTimeout(
+    () => closeModal("addModal"),
+    900
+  );
+
+}
+
+
+/* ================================
+   SEND MONEY
+================================ */
+
+function sendMoney(){
+
+  const recipient =
+    document.getElementById("recipient").value.trim();
+
+  const amount =
+    Number(document.getElementById("sendAmount").value);
+
+  const msg =
+    document.getElementById("sendMsg");
+
+
+  const user = getUser();
+
+
+  if(!recipient){
+
+    showMessage(
+      msg,
+      "Enter the recipient.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(!amount || amount <= 0){
+
+    showMessage(
+      msg,
+      "Enter a valid amount.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(amount > user.balance){
+
+    showMessage(
+      msg,
+      "Insufficient wallet balance.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  user.balance -= amount;
+
+  user.sent += amount;
+
+
+  user.transactions.unshift({
+
+    id:"TX" + Date.now(),
+
+    type:"debit",
+
+    title:"Sent to " + recipient,
+
+    amount:amount,
+
+    date:new Date().toLocaleString()
+
+  });
+
+
+  saveDB();
+
+  updateUI();
+
+
+  showMessage(
+    msg,
+    money(amount) + " sent successfully.",
+    "success"
+  );
+
+
+  document.getElementById("recipient").value = "";
+
+  document.getElementById("sendAmount").value = "";
+
+
+  setTimeout(
+    () => closeModal("sendModal"),
+    900
+  );
+
+}
+
+
+/* ================================
+   TRANSACTIONS
+================================ */
+
+function renderTransactions(){
+
+  const user = getUser();
+
+  const recent =
+    document.getElementById("recentTransactions");
+
+  const all =
+    document.getElementById("allTransactions");
+
+
+  if(!user.transactions.length){
+
+    recent.innerHTML =
+      emptyTransactions();
+
+    all.innerHTML =
+      emptyTransactions();
+
+    return;
+
+  }
+
+
+  recent.innerHTML =
+    user.transactions
+      .slice(0,5)
+      .map(transactionHTML)
+      .join("");
+
+
+  all.innerHTML =
+    user.transactions
+      .map(transactionHTML)
+      .join("");
+
+}
+
+
+function transactionHTML(tx){
+
+  const credit =
+    tx.type === "credit";
+
+
+  return `
+
+    <div class="transaction">
+
+      <div class="tx-left">
+
+        <div class="tx-icon">
+          ${credit ? "↓" : "↑"}
+        </div>
+
+        <div>
+
+          <div class="tx-title">
+            ${escapeHTML(tx.title)}
+          </div>
+
+          <div class="tx-date">
+            ${tx.date}
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="${credit ? "income" : "expense"}">
+
+        ${credit ? "+" : "-"}${money(tx.amount)}
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+function emptyTransactions(){
+
+  return `
+
+    <div style="padding:35px;text-align:center">
+
+      <div style="font-size:35px">📭</div>
+
+      <strong>No transactions yet</strong>
+
+      <p class="muted">
+        Your wallet activity will appear here.
+      </p>
+
+    </div>
+
+  `;
+
+}
+
+
+/* ================================
+   PAGE NAVIGATION
+================================ */
+
+function openPage(page,button){
+
+  document
+    .querySelectorAll(".page")
+    .forEach(
+      p => p.classList.remove("active")
+    );
+
+
+  const selected =
+    document.getElementById(page);
+
+  if(selected)
+    selected.classList.add("active");
+
+
+  document
+    .querySelectorAll(".nav-btn")
+    .forEach(
+      b => b.classList.remove("active")
+    );
+
+
+  if(button)
+    button.classList.add("active");
+
+}
+
+
+function mobilePage(page,button){
+
+  openPage(page);
+
+  document
+    .querySelectorAll(".mobile-nav button")
+    .forEach(
+      b => b.classList.remove("active")
+    );
+
+  button.classList.add("active");
+
+}
+
+
+/* ================================
+   MODALS
+================================ */
+
+function openModal(id){
+
+  document
+    .getElementById(id)
+    .classList.remove("hidden");
+
+}
+
+
+function closeModal(id){
+
+  document
+    .getElementById(id)
+    .classList.add("hidden");
+
+}
+
+
+/* ================================
+   MESSAGE
+================================ */
+
+function showMessage(element,text,type){
+
+  element.textContent = text;
+
+  element.className =
+    "message " + type;
+
+}
+
+
+/* ================================
+   SECURITY HELP
+================================ */
+
+function escapeHTML(text){
+
+  return String(text)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+/* ================================
+   AUTO LOGIN
+================================ */
+
+if(db.currentUser){
+
+  const exists =
+    db.users.some(
+      u => u.id === db.currentUser
+    );
+
+  if(exists){
+
+    openApp();
+
+  }
+
+}
+
+</script>
+
+</body>
+</html>
