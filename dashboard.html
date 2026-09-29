@@ -1,0 +1,3532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Danttel SchoolHub — Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+    --primary:#2563eb;
+    --primary-dark:#1d4ed8;
+    --bg:#f5f7fb;
+    --card:#fff;
+    --text:#172033;
+    --muted:#6b7280;
+    --border:#e5e7eb;
+    --danger:#dc2626;
+    --sidebar:#101828;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+}
+
+button,input,select{font:inherit}
+
+.mobile-header{
+    display:none;
+    height:64px;
+    background:#fff;
+    border-bottom:1px solid var(--border);
+    align-items:center;
+    justify-content:space-between;
+    padding:0 16px;
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    z-index:1000;
+}
+
+.menu-btn{
+    width:44px;
+    height:44px;
+    border:0;
+    background:#f1f5f9;
+    border-radius:12px;
+    font-size:23px;
+    cursor:pointer;
+}
+
+.mobile-logo{
+    font-weight:800;
+    font-size:18px;
+}
+
+.mobile-logo span{color:var(--primary)}
+
+.sidebar{
+    width:270px;
+    background:var(--sidebar);
+    color:#fff;
+    position:fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    overflow-y:auto;
+    z-index:1100;
+    padding:20px 14px;
+}
+
+.logo{
+    font-size:22px;
+    font-weight:800;
+    padding:8px 12px 24px;
+}
+
+.logo span{color:#60a5fa}
+
+.school-mini{
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    padding:12px;
+    margin-bottom:18px;
+}
+
+.school-mini strong{
+    display:block;
+    font-size:14px;
+    margin-bottom:4px;
+}
+
+.school-mini small{color:#aab4c5}
+
+.nav-title{
+    color:#78859a;
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    padding:12px 12px 7px;
+    letter-spacing:.7px;
+}
+
+.nav-btn,
+.nav-group-btn{
+    width:100%;
+    border:0;
+    color:#dbe4f0;
+    background:transparent;
+    padding:11px 12px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    gap:11px;
+    font-size:14px;
+    cursor:pointer;
+    text-align:left;
+    margin-bottom:3px;
+}
+
+.nav-btn:hover,
+.nav-group-btn:hover{
+    background:rgba(255,255,255,.08);
+    color:#fff;
+}
+
+.nav-btn.active{
+    background:var(--primary);
+    color:#fff;
+}
+
+.nav-group-btn .arrow{
+    margin-left:auto;
+    transition:.2s;
+}
+
+.nav-group.open .arrow{
+    transform:rotate(180deg);
+}
+
+.submenu{
+    display:none;
+    padding-left:18px;
+}
+
+.nav-group.open .submenu{
+    display:block;
+}
+
+.submenu .nav-btn{
+    font-size:13px;
+    color:#b9c6d8;
+    padding:9px 12px;
+}
+
+.sidebar-bottom{
+    margin-top:20px;
+    padding-top:14px;
+    border-top:1px solid rgba(255,255,255,.08);
+}
+
+.logout{color:#fca5a5}
+
+.main{
+    margin-left:270px;
+    min-height:100vh;
+    padding:28px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:26px;
+}
+
+.page-title h1{
+    font-size:27px;
+    margin-bottom:5px;
+}
+
+.page-title p{
+    color:var(--muted);
+    font-size:14px;
+}
+
+.user-box{
+    background:#fff;
+    border:1px solid var(--border);
+    padding:10px 14px;
+    border-radius:12px;
+    font-size:13px;
+}
+
+.user-box strong{display:block}
+
+.page{display:none}
+.page.active{display:block}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    margin-bottom:22px;
+}
+
+.stat{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:20px;
+}
+
+.stat-icon{
+    font-size:25px;
+    margin-bottom:13px;
+}
+
+.stat-label{
+    color:var(--muted);
+    font-size:13px;
+}
+
+.stat-number{
+    font-size:27px;
+    font-weight:800;
+    margin-top:4px;
+}
+
+.card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.card-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+}
+
+.card-head h2{font-size:18px}
+
+.card-head p{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:3px;
+}
+
+.btn{
+    border:0;
+    border-radius:10px;
+    padding:10px 15px;
+    cursor:pointer;
+    font-weight:600;
+    font-size:13px;
+}
+
+.btn-primary{
+    background:var(--primary);
+    color:#fff;
+}
+
+.btn-primary:hover{
+    background:var(--primary-dark);
+}
+
+.btn-light{
+    background:#eef2f7;
+    color:#334155;
+}
+
+.btn-danger{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.btn-small{
+    padding:7px 10px;
+    font-size:12px;
+}
+
+.search{
+    width:100%;
+    max-width:330px;
+    padding:11px 13px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    outline:none;
+}
+
+.search:focus{
+    border-color:var(--primary);
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:600px;
+}
+
+th,td{
+    padding:13px 12px;
+    text-align:left;
+    border-bottom:1px solid var(--border);
+    font-size:13px;
+}
+
+th{
+    color:#64748b;
+    background:#f8fafc;
+    font-weight:700;
+}
+
+.empty{
+    text-align:center;
+    color:var(--muted);
+    padding:35px;
+}
+
+.school-info{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+}
+
+.info-box{
+    background:#f8fafc;
+    padding:15px;
+    border-radius:12px;
+}
+
+.info-box small{
+    color:var(--muted);
+    display:block;
+    margin-bottom:4px;
+}
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,.55);
+    z-index:2000;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    background:#fff;
+    width:100%;
+    max-width:500px;
+    border-radius:18px;
+    padding:22px;
+    max-height:90vh;
+    overflow-y:auto;
+}
+
+.modal-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.close{
+    width:35px;
+    height:35px;
+    border:0;
+    border-radius:9px;
+    background:#f1f5f9;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.form-group{
+    margin-bottom:14px;
+}
+
+.form-group label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.form-group input,
+.form-group select{
+    width:100%;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    outline:none;
+    background:#fff;
+}
+
+.form-group input:focus,
+.form-group select:focus{
+    border-color:var(--primary);
+}
+
+.form-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:20px;
+}
+
+.toast{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    background:#111827;
+    color:#fff;
+    padding:13px 17px;
+    border-radius:10px;
+    display:none;
+    z-index:3000;
+    font-size:13px;
+}
+
+.toast.show{
+    display:block;
+}
+
+.toast.success{
+    background:#15803d;
+}
+
+.toast.error{
+    background:#b91c1c;
+}
+
+.overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    z-index:1050;
+}
+
+.overlay.show{
+    display:block;
+}
+
+@media(max-width:900px){
+
+    .mobile-header{
+        display:flex;
+    }
+
+    .sidebar{
+        transform:translateX(-100%);
+        transition:.25s ease;
+        width:285px;
+        padding-top:76px;
+    }
+
+    .sidebar.open{
+        transform:translateX(0);
+    }
+
+    .main{
+        margin-left:0;
+        padding:88px 16px 25px;
+    }
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .user-box{
+        display:none;
+    }
+}
+
+@media(max-width:560px){
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+    }
+
+    .stat{
+        padding:15px;
+    }
+
+    .stat-number{
+        font-size:23px;
+    }
+
+    .card{
+        padding:15px;
+    }
+
+    .card-head{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .card-head .btn{
+        width:100%;
+    }
+
+    .search{
+        max-width:none;
+    }
+
+    .school-info{
+        grid-template-columns:1fr;
+      /* =========================================
+   DANTTEL SCHOOLHUB - SIDEBAR V2
+   ========================================= */
+
+.sidebar{
+    background:
+        linear-gradient(
+            180deg,
+            #07131f 0%,
+            #081b2a 55%,
+            #06111c 100%
+        );
+
+    border-right:1px solid rgba(66,211,146,.12);
+    box-shadow:12px 0 35px rgba(0,0,0,.18);
+
+    padding:24px 14px 18px;
+
+    overflow-y:auto;
+    scrollbar-width:thin;
+}
+
+
+/* LOGO */
+
+.sidebar .logo{
+    font-size:25px;
+    font-weight:900;
+    letter-spacing:-.8px;
+
+    padding:4px 14px 18px;
+
+    color:#ffffff;
+}
+
+.sidebar .logo span{
+    color:#42d392;
+}
+
+
+/* SCHOOL MINI PROFILE */
+
+.school-mini{
+    margin:0 6px 22px;
+    padding:14px;
+
+    background:rgba(255,255,255,.035);
+
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:14px;
+}
+
+.school-mini strong{
+    display:block;
+
+    color:#ffffff;
+
+    font-size:14px;
+    font-weight:700;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.school-mini small{
+    display:block;
+
+    margin-top:4px;
+
+    color:#71879a;
+
+    font-size:11px;
+}
+
+
+/* SECTION TITLES */
+
+.nav-title{
+    padding:0 13px;
+    margin:20px 0 8px;
+
+    color:#6f8ca5;
+
+    font-size:10px;
+    font-weight:800;
+
+    text-transform:uppercase;
+    letter-spacing:1.2px;
+}
+
+
+/* NORMAL NAV BUTTONS */
+
+.nav-btn,
+.nav-group-btn{
+
+    width:100%;
+
+    display:flex;
+    align-items:center;
+
+    gap:12px;
+
+    border:0;
+    border-radius:11px;
+
+    padding:12px 13px;
+
+    margin:3px 0;
+
+    background:transparent;
+
+    color:#a9bac9;
+
+    font-size:14px;
+    font-weight:600;
+
+    text-align:left;
+
+    cursor:pointer;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
+}
+
+
+/* ICON */
+
+.nav-btn:first-letter,
+.nav-group-btn:first-letter{
+    font-size:17px;
+}
+
+
+/* HOVER */
+
+.nav-btn:hover,
+.nav-group-btn:hover{
+    background:rgba(66,211,146,.08);
+    color:#ffffff;
+
+    transform:translateX(2px);
+}
+
+
+/* ACTIVE */
+
+.nav-btn.active{
+    position:relative;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(66,211,146,.22),
+            rgba(66,211,146,.08)
+        );
+
+    color:#ffffff;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(66,211,146,.12);
+}
+
+
+/* GREEN ACTIVE BAR */
+
+.nav-btn.active::before{
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    top:8px;
+    bottom:8px;
+
+    width:3px;
+
+    border-radius:0 5px 5px 0;
+
+    background:#42d392;
+
+    box-shadow:
+        0 0 12px rgba(66,211,146,.7);
+}
+
+
+/* GROUP BUTTON */
+
+.nav-group-btn{
+    justify-content:flex-start;
+}
+
+.nav-group-btn span:nth-child(2){
+    flex:1;
+}
+
+.nav-group-btn .arrow{
+    margin-left:auto;
+
+    color:#6f8ca5;
+
+    font-size:17px;
+
+    transition:transform .2s ease;
+}
+
+
+/* SUBMENU */
+
+.nav-group .submenu{
+    padding-left:9px;
+
+    border-left:1px solid rgba(66,211,146,.10);
+
+    margin-left:14px;
+}
+
+
+/* SUBMENU BUTTONS */
+
+.nav-group .submenu .nav-btn{
+    padding:10px 12px;
+
+    font-size:13px;
+}
+
+
+/* SCROLLBAR */
+
+.sidebar::-webkit-scrollbar{
+    width:5px;
+}
+
+.sidebar::-webkit-scrollbar-track{
+    background:transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb{
+    background:rgba(66,211,146,.25);
+    border-radius:10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover{
+    background:rgba(66,211,146,.5);
+}
+
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+    .sidebar{
+        box-shadow:
+            8px 0 30px rgba(0,0,0,.3);
+    }
+
+      }
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="mobile-header">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="mobile-logo">Danttel <span>SchoolHub</span></div>
+    <div style="width:44px"></div>
+</header>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+        Danttel <span>SchoolHub</span>
+    </div>
+
+    <div class="school-mini">
+        <strong id="sideSchoolName">Loading school...</strong>
+        <small id="sideSchoolEmail">School Management</small>
+    </div>
+
+    <div class="nav-title">Main</div>
+
+    <button class="nav-btn active"
+            data-page="dashboard"
+            onclick="showPage('dashboard')">
+        🏠 <span>Dashboard</span>
+    </button>
+
+    <button class="nav-btn"
+            data-page="students"
+            onclick="showPage('students')">
+        👨‍🎓 <span>Students</span>
+    </button>
+
+    <button class="nav-btn"
+            data-page="teachers"
+            onclick="showPage('teachers')">
+        👨‍🏫 <span>Teachers</span>
+    </button>
+
+    <div class="nav-title">Academics</div>
+
+    <div class="nav-group" id="academicsGroup">
+
+        <button class="nav-group-btn"
+                onclick="toggleGroup('academicsGroup')">
+            📚 <span>Academics</span>
+            <span class="arrow">⌄</span>
+        </button>
+
+        <div class="submenu">
+
+            <button class="nav-btn"
+                    data-page="classes"
+                    onclick="showPage('classes')">
+                🏫 <span>Classes</span>
+            </button>
+
+            <button class="nav-btn"
+                    data-page="subjects"
+                    onclick="showPage('subjects')">
+                📖 <span>Subjects</span>
+            </button>
+
+            <button class="nav-btn"
+                    data-page="timetable"
+                    onclick="showPage('timetable')">
+                🗓️ <span>Timetable</span>
+            </button>
+
+            <button class="nav-btn"
+                    data-page="results"
+                    onclick="window.location.href='results.html'">
+                📝 <span>Results</span>
+            </button>
+
+        </div>
+    </div>
+
+    <div class="nav-title">School Management</div>
+
+    <div class="nav-group" id="managementGroup">
+
+        <button class="nav-group-btn"
+                onclick="toggleGroup('managementGroup')">
+            📋 <span>Management</span>
+            <span class="arrow">⌄</span>
+        </button>
+
+        <div class="submenu">
+
+            <button class="nav-btn"
+                    data-page="attendance"
+                    onclick="showPage('attendance')">
+                📅 <span>Attendance</span>
+            </button>
+
+            <button class="nav-btn"
+                    data-page="fees"
+                    onclick="showPage('fees')">
+                💳 <span>Fees</span>
+            </button>
+
+            <button class="nav-btn"
+                    data-page="admissions"
+                    onclick="showPage('admissions')">
+                📥 <span>Admissions</span>
+            </button>
+
+            <button class="nav-btn"
+                    data-page="announcements"
+                    onclick="showPage('announcements')">
+                📢 <span>Announcements</span>
+            </button>
+
+        </div>
+    </div>
+
+    <div class="nav-title">System</div>
+
+    <button class="nav-btn"
+            data-page="settings"
+            onclick="showPage('settings')">
+        ⚙️ <span>Settings</span>
+    </button>
+
+    <div class="sidebar-bottom">
+
+        <button class="nav-btn logout"
+                onclick="logout()">
+            🚪 <span>Logout</span>
+        </button>
+
+    </div>
+
+</aside>
+
+
+<main class="main">
+
+<section class="page active" id="page-dashboard">
+
+    <div class="topbar">
+
+        <div class="page-title">
+            <h1>Dashboard</h1>
+            <p>Welcome to your Danttel SchoolHub management area.</p>
+        </div>
+
+        <div class="user-box">
+            <strong id="userName">Loading...</strong>
+            <span id="userEmail">Loading...</span>
+        </div>
+
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+            <div class="stat-icon">👨‍🎓</div>
+            <div class="stat-label">Students</div>
+            <div class="stat-number" id="studentCount">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-icon">👨‍🏫</div>
+            <div class="stat-label">Teachers</div>
+            <div class="stat-number" id="teacherCount">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-icon">🏫</div>
+            <div class="stat-label">Classes</div>
+            <div class="stat-number" id="classCount">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-icon">📖</div>
+            <div class="stat-label">Subjects</div>
+            <div class="stat-number" id="subjectCount">0</div>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-head">
+            <div>
+                <h2>School Information</h2>
+                <p>Your registered school details.</p>
+            </div>
+        </div>
+
+        <div class="school-info">
+
+            <div class="info-box">
+                <small>School Name</small>
+                <strong id="schoolName">Loading...</strong>
+            </div>
+
+            <div class="info-box">
+                <small>Email</small>
+                <strong id="schoolEmail">Loading...</strong>
+            </div>
+
+            <div class="info-box">
+                <small>Phone</small>
+                <strong id="schoolPhone">Loading...</strong>
+            </div>
+
+            <div class="info-box">
+                <small>WhatsApp</small>
+                <strong id="schoolWhatsapp">Loading...</strong>
+            </div>
+
+            <div class="info-box" style="grid-column:1/-1">
+                <small>Address</small>
+                <strong id="schoolAddress">Loading...</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- STUDENTS -->
+
+<section class="page" id="page-students">
+
+    <div class="topbar">
+
+        <div class="page-title">
+            <h1>Students</h1>
+            <p>Manage students in your school.</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-head">
+
+            <div>
+                <h2>Student List</h2>
+                <p>Search and manage registered students.</p>
+            </div>
+
+            <button class="btn btn-primary"
+                    onclick="openStudentModal()">
+                + Add Student
+            </button>
+
+        </div>
+
+        <input
+            type="text"
+            class="search"
+            id="studentSearch"
+            placeholder="Search students..."
+            oninput="filterStudents()"
+        >
+
+        <div class="table-wrap" style="margin-top:18px">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Name</th>
+                        <th>Admission Number</th>
+                        <th>Class</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="studentTable">
+
+                    <tr>
+                        <td colspan="3"
+                            class="empty">
+                            Loading students...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- TEACHERS -->
+
+<section class="page" id="page-teachers">
+
+    <div class="topbar">
+
+        <div class="page-title">
+            <h1>Teachers</h1>
+            <p>Manage teachers and teaching subjects.</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-head">
+
+            <div>
+                <h2>Teacher List</h2>
+                <p>Teachers belonging to your school.</p>
+            </div>
+
+            <button class="btn btn-primary"
+                    onclick="openModal('teacherModal')">
+                + Add Teacher
+            </button>
+
+        </div>
+
+        <input
+            type="text"
+            class="search"
+            id="teacherSearch"
+            placeholder="Search teachers..."
+            oninput="filterTeachers()"
+        >
+
+        <div class="table-wrap" style="margin-top:18px">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Subject</th>
+                    </tr>
+
+                </thead>,
+
+                <tbody id="teacherTable">
+
+                    <tr>
+                        <td colspan="3"
+                            class="empty">
+                            Loading teachers...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- CLASSES -->
+
+<section class="page" id="page-classes">
+
+    <div class="topbar">
+
+        <div class="page-title">
+            <h1>Classes</h1>
+            <p>Create and manage your school's classes.</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-head">
+
+            <div>
+                <h2>Class List</h2>
+                <p>Only classes belonging to your school are shown.</p>
+            </div>
+
+            <button class="btn btn-primary"
+                    onclick="openModal('classModal')">
+                + Add Class
+            </button>
+
+        </div>
+
+        <input
+            type="text"
+            class="search"
+            id="classSearch"
+            placeholder="Search classes..."
+            oninput="filterClasses()"
+        >
+
+        <div class="table-wrap" style="margin-top:18px">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Class</th>
+                        <th>Section</th>
+                        <th>Created</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="classTable">
+
+                    <tr>
+                        <td colspan="4"
+                            class="empty">
+                            Loading classes...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- SUBJECTS -->
+
+<section class="page" id="page-subjects">
+
+    <div class="topbar">
+
+        <div class="page-title">
+            <h1>Subjects</h1>
+            <p>Create and manage your school's subjects.</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-head">
+
+            <div>
+                <h2>Subject List</h2>
+                <p>Only subjects belonging to your school are shown.</p>
+            </div>
+
+            <button class="btn btn-primary"
+                    onclick="openModal('subjectModal')">
+                + Add Subject
+            </button>
+
+        </div>
+
+        <input
+            type="text"
+            class="search"
+            id="subjectSearch"
+            placeholder="Search subjects..."
+            oninput="filterSubjects()"
+        >
+
+        <div class="table-wrap" style="margin-top:18px">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Subject</th>
+                        <th>Code</th>
+                        <th>Created</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="subjectTable">
+
+                    <tr>
+                        <td colspan="4"
+                            class="empty">
+                            Loading subjects...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="page" id="page-timetable">
+
+    <div class="topbar">
+
+        <div class="page-title">
+            <h1>Timetable</h1>
+            <p>Manage your school timetable.</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+        <h2>Timetable</h2>
+        <p style="color:#6b7280;margin-top:8px">
+            Timetable will be connected next.
+        </p>
+    </div>
+
+</section>
+
+
+<section class="page" id="page-results">
+
+    <div class="topbar">
+
+        <div class="page-title">
+            <h1>Results</h1>
+            <p>Manage student academic results.</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Results</h2>
+
+        <p style="color:#6b7280;margin-top:8px">
+            Results will be connected next.
+        </p>
+
+    </div>
+
+</section>
+
+
+<section class="page" id="page-attendance">
+
+    <div class="topbar">
+
+        <div class="page-title">
+            <h1>Attendance</h1>
+            <p>Track student attendance.</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Attendance</h2>
+
+        <p style="color:#6b7280;margin-top:8px">
+            Attendance will be connected next.
+        </p>
+
+    </div>
+
+</section>
+
+
+<section class="page" id="page-fees">
+
+    <div class="topbar">
+
+        <div class="page-title">
+            <h1>Fees</h1>
+            <p>Manage school fees and payments.</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Fees</h2>
+
+        <p style="color:#6b7280;margin-top:8px">
+            Fees will be connected next.
+        </p>
+
+    </div>
+
+</section>
+
+
+<section class="page" id="page-admissions">
+
+    <div class="topbar">
+
+        <div class="page-title">
+            <h1>Admissions</h1>
+            <p>Manage student admissions.</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Admissions</h2>
+
+        <p style="color:#6b7280;margin-top:8px">
+            Admissions will be connected next.
+        </p>
+
+    </div>
+
+</section>
+
+
+<section class="page" id="page-announcements">
+
+    <div class="topbar">
+
+        <div class="page-title">
+            <h1>Announcements</h1>
+            <p>Manage school announcements.</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Announcements</h2>
+
+        <p style="color:#6b7280;margin-top:8px">
+            Announcements will be connected next.
+        </p>
+
+    </div>
+
+</section>
+
+
+<section class="page" id="page-settings">
+
+    <div class="topbar">
+
+        <div class="page-title">
+            <h1>Settings</h1>
+            <p>SchoolHub settings.</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Settings</h2>
+
+        <p style="color:#6b7280;margin-top:8px">
+            Settings will be connected next.
+        </p>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<!-- STUDENT MODAL -->
+
+<div class="modal" id="studentModal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>Add Student</h2>
+
+            <button class="close"
+                    onclick="closeModal('studentModal')">
+                ×
+            </button>
+
+        </div>
+
+        <form onsubmit="addStudent(event)">
+
+            <div class="form-group">
+
+                <label>Full Name</label>
+
+                <input
+                    id="studentName"
+                    placeholder="e.g. John Daniel"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Admission Number</label>
+
+                <input
+                    id="studentAdmission"
+                    placeholder="e.g. DTS001"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+    <label>Class</label>
+
+    <select id="studentClass" required>
+
+        <option value="">
+            Select class
+        </option>
+
+    </select>
+
+</div>
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    onclick="closeModal('studentModal')">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    type="submit">
+
+                    Add Student
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- TEACHER MODAL -->
+
+<div class="modal" id="teacherModal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>Add Teacher</h2>
+
+            <button
+                class="close"
+                onclick="closeModal('teacherModal')">
+
+                ×
+
+            </button>
+
+        </div>
+
+        <form onsubmit="addTeacher(event)">
+
+            <div class="form-group">
+
+                <label>Full Name</label>
+
+                <input
+                    id="teacherName"
+                    placeholder="e.g. Mrs. Jane Smith"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Phone</label>
+
+                <input
+                    id="teacherPhone"
+                    placeholder="08012345678"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Subject</label>
+
+                <input
+                    id="teacherSubject"
+                    placeholder="Mathematics"
+                >
+
+            </div>
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    onclick="closeModal('teacherModal')">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    type="submit">
+
+                    Add Teacher
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- CLASS MODAL -->
+
+<div class="modal" id="classModal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>Add Class</h2>
+
+            <button
+                class="close"
+                onclick="closeModal('classModal')">
+
+                ×
+
+            </button>
+
+        </div>
+
+        <form onsubmit="addClass(event)">
+
+            <div class="form-group">
+
+                <label>Class Name</label>
+
+                <input
+                    id="className"
+                    placeholder="e.g. SS3"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Section</label>
+
+                <input
+                    id="classSection"
+                    placeholder="e.g. A"
+                >
+
+            </div>
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    onclick="closeModal('classModal')">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    type="submit">
+
+                    Add Class
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- SUBJECT MODAL -->
+
+<div class="modal" id="subjectModal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>Add Subject</h2>
+
+            <button
+                class="close"
+                onclick="closeModal('subjectModal')">
+
+                ×
+
+            </button>
+
+        </div>
+
+        <form onsubmit="addSubject(event)">
+
+            <div class="form-group">
+
+                <label>Subject Name</label>
+
+                <input
+                    id="subjectName"
+                    placeholder="e.g. Mathematics"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Subject Code</label>
+
+                <input
+                    id="subjectCode"
+                    placeholder="e.g. MTH101"
+                >
+
+            </div>
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    onclick="closeModal('subjectModal')">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    type="submit">
+
+                    Add Subject
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+/* =========================================
+   SUPABASE
+========================================= */
+
+const SUPABASE_URL =
+"https://cxdqgulipvhgpiwrjvgo.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_MdS04D2lfMwcU2Du8rjnwQ_Ffu3kXRU";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =========================================
+   GLOBAL STATE
+========================================= */
+
+let currentUser = null;
+let currentProfile = null;
+let currentSchool = null;
+
+let allStudents = [];
+let allTeachers = [];
+let allClasses = [];
+let allSubjects = [];
+
+
+/* =========================================
+   START
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    checkSession
+);
+
+
+/* =========================================
+   SESSION
+========================================= */
+
+async function checkSession(){
+
+    const {data,error} =
+        await supabaseClient.auth.getSession();
+
+    if(error){
+
+        console.error(error);
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    if(!data.session){
+
+        window.location.href =
+            "login.html";
+
+        return;
+    }
+
+    currentUser =
+        data.session.user;
+
+    document.getElementById(
+        "userEmail"
+    ).textContent =
+        currentUser.email || "";
+
+    await loadProfile();
+}
+
+
+/* =========================================
+   PROFILE
+========================================= */
+
+async function loadProfile(){
+
+    const {data,error} =
+        await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id",currentUser.id)
+        .maybeSingle();
+
+    if(error){
+
+        console.error(error);
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    if(!data){
+
+        showToast(
+            "Your profile was not found.",
+            "error"
+        );
+
+        return;
+    }
+
+    currentProfile = data;
+
+    document.getElementById(
+        "userName"
+    ).textContent =
+        data.full_name ||
+        "School Administrator";
+
+    if(!data.school_id){
+
+        showToast(
+            "Your profile has no school.",
+            "error"
+        );
+
+        return;
+    }
+
+    await loadSchool();
+
+    await Promise.all([
+        loadClasses(),
+        loadSubjects(),
+        loadTeachers(),
+        loadStudents()
+    ]);
+}
+
+
+/* =========================================
+   SCHOOL
+========================================= */
+
+async function loadSchool(){
+
+    const {data,error} =
+        await supabaseClient
+        .from("schools")
+        .select("*")
+        .eq(
+            "id",
+            currentProfile.school_id
+        )
+        .maybeSingle();
+
+    if(error){
+
+        console.error(error);
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    if(!data)
+        return;
+
+    currentSchool = data;
+
+    document.getElementById(
+        "schoolName"
+    ).textContent =
+        data.name || "—";
+
+    document.getElementById(
+        "schoolEmail"
+    ).textContent =
+        data.email || "—";
+
+    document.getElementById(
+        "schoolPhone"
+    ).textContent =
+        data.phone || "—";
+
+    document.getElementById(
+        "schoolWhatsapp"
+    ).textContent =
+        data.whatsapp || "—";
+
+    document.getElementById(
+        "schoolAddress"
+    ).textContent =
+        data.address || "—";
+
+    document.getElementById(
+        "sideSchoolName"
+    ).textContent =
+        data.name || "My School";
+
+    document.getElementById(
+        "sideSchoolEmail"
+    ).textContent =
+        data.email || "School Management";
+}
+
+
+/* =========================================
+   STUDENTS
+========================================= */
+
+async function loadStudents(){
+
+    if(!currentProfile?.school_id)
+        return;
+
+    const { data, error } =
+        await supabaseClient
+        .from("students")
+        .select(`
+            id,
+            school_id,
+            user_id,
+            admission_number,
+            full_name,
+            gender,
+            date_of_birth,
+            class_id,
+            classes (
+                id,
+                name,
+                section
+            )
+        `)
+        .eq(
+            "school_id",
+            currentProfile.school_id
+        )
+        .order(
+            "full_name",
+            { ascending: true }
+        );
+
+    if(error){
+
+        console.error(
+            "Students error:",
+            error
+        );
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    allStudents = data || [];
+
+    renderStudents(allStudents);
+
+    const count =
+        document.getElementById("studentCount");
+
+    if(count){
+        count.textContent =
+            allStudents.length;
+    }
+}
+
+
+function renderStudents(list){
+
+    const table =
+        document.getElementById("studentTable");
+
+    if(!list.length){
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="4" class="empty">
+                    No students found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    table.innerHTML =
+        list.map(student => {
+
+            const className =
+                student.classes?.name || "—";
+
+            const section =
+                student.classes?.section
+                    ? ` - ${student.classes.section}`
+                    : "";
+
+            return `
+                <tr>
+
+                    <td>
+                        <strong>
+                            ${escapeHTML(
+                                student.full_name || "Unnamed"
+                            )}
+                        </strong>
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            student.admission_number || "—"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            className + section
+                        )}
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="btn btn-light"
+                            onclick="editStudent('${student.id}')">
+                            Edit
+                        </button>
+
+                        <button
+                            class="btn btn-danger"
+                            onclick="deleteStudent('${student.id}')">
+                            Delete
+                        </button>
+
+                    </td>
+
+                </tr>
+            `;
+
+        }).join("");
+}
+
+
+function filterStudents(){
+
+    const input =
+        document.getElementById(
+            "studentSearch"
+        );
+
+    if(!input)
+        return;
+
+    const q =
+        input.value
+        .toLowerCase()
+        .trim();
+
+    const filtered =
+        allStudents.filter(student => {
+
+            const name =
+                student.full_name || "";
+
+            const admission =
+                student.admission_number || "";
+
+            const className =
+                student.classes?.name || "";
+
+            const section =
+                student.classes?.section || "";
+
+            const text = `
+                ${name}
+                ${admission}
+                ${className}
+                ${section}
+            `.toLowerCase();
+
+            return text.includes(q);
+        });
+
+    renderStudents(filtered);
+}
+async function deleteStudent(studentId){
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to delete this student?"
+        );
+
+    if(!confirmed)
+        return;
+
+    const { error } =
+        await supabaseClient
+        .from("students")
+        .delete()
+        .eq("id", studentId)
+        .eq(
+            "school_id",
+            currentProfile.school_id
+        );
+
+    if(error){
+
+        console.error(
+            "Delete student error:",
+            error
+        );
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    showToast(
+        "Student deleted successfully.",
+        "success"
+    );
+
+    await loadStudents();
+}
+
+/* =========================================
+   STUDENT MODAL
+========================================= */
+
+function openStudentModal(){
+
+    populateStudentClasses();
+
+    openModal(
+        "studentModal"
+    );
+}
+
+
+function populateStudentClasses(){
+
+    const select =
+        document.getElementById(
+            "studentClass"
+        );
+
+    if(!allClasses.length){
+
+        select.innerHTML = `
+        <option value="">
+            No classes available
+        </option>`;
+
+        return;
+    }
+
+    select.innerHTML = `
+        <option value="">
+            Select class
+        </option>
+    `;
+
+    allClasses.forEach(item => {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value =
+            item.id;
+
+        option.textContent =
+            item.name +
+            (
+                item.section
+                    ? " " +
+                      item.section
+                    : ""
+            );
+
+        select.appendChild(
+            option
+        );
+
+    });
+}
+async function editStudent(studentId){
+
+    const student =
+        allStudents.find(
+            item => item.id === studentId
+        );
+
+    if(!student){
+
+        showToast(
+            "Student not found.",
+            "error"
+        );
+
+        return;
+    }
+
+    const name =
+        prompt(
+            "Enter student's full name:",
+            student.full_name || ""
+        );
+
+    if(name === null)
+        return;
+
+    const admission =
+        prompt(
+            "Enter admission number:",
+            student.admission_number || ""
+        );
+
+    if(admission === null)
+        return;
+
+    if(!name.trim() || !admission.trim()){
+
+        showToast(
+            "Name and admission number are required.",
+            "error"
+        );
+
+        return;
+    }
+
+    const { error } =
+        await supabaseClient
+        .from("students")
+        .update({
+
+            full_name:
+                name.trim(),
+
+            admission_number:
+                admission.trim()
+
+        })
+        .eq(
+            "id",
+            studentId
+        )
+        .eq(
+            "school_id",
+            currentProfile.school_id
+        );
+
+    if(error){
+
+        console.error(
+            "Edit student error:",
+            error
+        );
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    showToast(
+        "Student updated successfully.",
+        "success"
+    );
+
+    await loadStudents();
+}
+
+async function addStudent(event){
+
+    event.preventDefault();
+
+    if(!currentProfile?.school_id){
+
+        showToast(
+            "School information is missing.",
+            "error"
+        );
+
+        return;
+    }
+
+    const name =
+        document.getElementById("studentName")
+        .value
+        .trim();
+
+    const admission =
+        document.getElementById("studentAdmission")
+        .value
+        .trim();
+
+    const classId =
+        document.getElementById("studentClass")
+        .value;
+
+    if(!name){
+
+        showToast(
+            "Enter the student's name.",
+            "error"
+        );
+
+        return;
+    }
+
+    if(!admission){
+
+        showToast(
+            "Enter an admission number.",
+            "error"
+        );
+
+        return;
+    }
+
+    if(!classId){
+
+        showToast(
+            "Select a class.",
+            "error"
+        );
+
+        return;
+    }
+
+    const {error} =
+        await supabaseClient
+        .from("students")
+        .insert({
+
+            id: crypto.randomUUID(),
+
+            school_id:
+                currentProfile.school_id,
+
+            user_id: null,
+
+            full_name: name,
+
+            admission_number: admission,
+
+            class_id: classId
+
+        });
+
+    if(error){
+
+        console.error(
+            "Add student error:",
+            error
+        );
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    closeModal("studentModal");
+
+    event.target.reset();
+
+    showToast(
+        "Student added successfully.",
+        "success"
+    );
+
+    await loadStudents();
+}
+
+
+/* =========================================
+   TEACHERS
+========================================= */
+
+async function loadTeachers(){
+
+    if(!currentProfile?.school_id)
+        return;
+
+    const {data,error} =
+        await supabaseClient
+        .from("teachers")
+        .select("*")
+        .eq(
+            "school_id",
+            currentProfile.school_id
+        )
+        .order(
+            "full_name"
+        );
+
+    if(error){
+
+        console.error(error);
+
+        return;
+    }
+
+    allTeachers =
+        data || [];
+
+    renderTeachers(
+        allTeachers
+    );
+
+    document.getElementById(
+        "teacherCount"
+    ).textContent =
+        allTeachers.length;
+}
+
+
+function renderTeachers(list){
+
+    const table =
+        document.getElementById(
+            "teacherTable"
+        );
+
+    if(!list.length){
+
+        table.innerHTML = `
+        <tr>
+            <td colspan="3"
+                class="empty">
+                No teachers found.
+            </td>
+        </tr>`;
+
+        return;
+    }
+
+    table.innerHTML =
+        list.map(teacher => `
+
+        <tr>
+
+            <td>
+                <strong>
+                    ${escapeHTML(
+                        teacher.full_name ||
+                        "Unnamed"
+                    )}
+                </strong>
+            </td>
+
+            <td>
+                ${escapeHTML(
+                    teacher.phone ||
+                    "—"
+                )}
+            </td>
+
+            <td>
+                ${escapeHTML(
+                    teacher.subject ||
+                    "—"
+                )}
+            </td>
+
+        </tr>
+
+    `).join("");
+}
+
+
+function filterTeachers(){
+
+    const q =
+        document.getElementById(
+            "teacherSearch"
+        ).value
+        .toLowerCase();
+
+    renderTeachers(
+
+        allTeachers.filter(
+            teacher => {
+
+                const text = `
+                    ${teacher.full_name || ""}
+                    ${teacher.phone || ""}
+                    ${teacher.subject || ""}
+                `.toLowerCase();
+
+                return text.includes(q);
+
+            }
+        )
+
+    );
+}
+
+
+async function addTeacher(event){
+
+    event.preventDefault();
+
+    const name =
+        document.getElementById(
+            "teacherName"
+        ).value.trim();
+
+    const phone =
+        document.getElementById(
+            "teacherPhone"
+        ).value.trim();
+
+    const subject =
+        document.getElementById(
+            "teacherSubject"
+        ).value.trim();
+
+    if(!name){
+
+        showToast(
+            "Enter the teacher's name.",
+            "error"
+        );
+
+        return;
+    }
+
+    const {error} =
+        await supabaseClient
+        .from("teachers")
+        .insert({
+
+            id:
+                crypto.randomUUID(),
+
+            school_id:
+                currentProfile.school_id,
+
+            user_id:
+                null,
+
+            full_name:
+                name,
+
+            phone:
+                phone || null,
+
+            subject:
+                subject || null
+
+        });
+
+    if(error){
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    closeModal(
+        "teacherModal"
+    );
+
+    event.target.reset();
+
+    showToast(
+        "Teacher added successfully.",
+        "success"
+    );
+
+    await loadTeachers();
+}
+
+
+/* =========================================
+   CLASSES
+========================================= */
+
+async function loadClasses(){
+
+    if(!currentProfile?.school_id)
+        return;
+
+    const {data,error} =
+        await supabaseClient
+        .from("classes")
+        .select(
+            "id,school_id,name,section,created_at"
+        )
+        .eq(
+            "school_id",
+            currentProfile.school_id
+        )
+        .order(
+            "name",
+            {ascending:true}
+        );
+
+    if(error){
+
+        console.error(
+            "Classes error:",
+            error
+        );
+
+        document.getElementById(
+            "classTable"
+        ).innerHTML = `
+        <tr>
+            <td colspan="4"
+                class="empty">
+                ${escapeHTML(
+                    error.message
+                )}
+            </td>
+        </tr>`;
+
+        return;
+    }
+
+    allClasses =
+        data || [];
+
+    renderClasses(
+        allClasses
+    );
+
+    document.getElementById(
+        "classCount"
+    ).textContent =
+        allClasses.length;
+  populateStudentClasses();
+}
+
+
+function renderClasses(list){
+
+    const table =
+        document.getElementById(
+            "classTable"
+        );
+
+    if(!list.length){
+
+        table.innerHTML = `
+        <tr>
+            <td colspan="4"
+                class="empty">
+                No classes found.
+            </td>
+        </tr>`;
+
+        return;
+    }
+
+    table.innerHTML =
+        list.map(item => `
+
+        <tr>
+
+            <td>
+                <strong>
+                    ${escapeHTML(
+                        item.name ||
+                        "—"
+                    )}
+                </strong>
+            </td>
+
+            <td>
+                ${escapeHTML(
+                    item.section ||
+                    "—"
+                )}
+            </td>
+
+            <td>
+                ${formatDate(
+                    item.created_at
+                )}
+            </td>
+
+            <td>
+
+                <button
+                    class="btn btn-danger btn-small"
+                    onclick="deleteClass('${item.id}')">
+
+                    Delete
+
+                </button>
+
+            </td>
+
+        </tr>
+
+    `).join("");
+}
+
+
+function filterClasses(){
+
+    const q =
+        document.getElementById(
+            "classSearch"
+        ).value
+        .toLowerCase();
+
+    renderClasses(
+
+        allClasses.filter(
+            item => {
+
+                const text = `
+                    ${item.name || ""}
+                    ${item.section || ""}
+                `.toLowerCase();
+
+                return text.includes(q);
+
+            }
+        )
+
+    );
+}
+
+
+async function addClass(event){
+
+    event.preventDefault();
+
+    if(!currentProfile?.school_id){
+
+        showToast(
+            "School information is missing.",
+            "error"
+        );
+
+        return;
+    }
+
+    const name =
+        document.getElementById(
+            "className"
+        ).value.trim();
+
+    const section =
+        document.getElementById(
+            "classSection"
+        ).value.trim();
+
+    if(!name){
+
+        showToast(
+            "Enter a class name.",
+            "error"
+        );
+
+        return;
+    }
+
+    const {error} =
+        await supabaseClient
+        .from("classes")
+        .insert({
+
+            id:
+                crypto.randomUUID(),
+
+            school_id:
+                currentProfile.school_id,
+
+            name:
+                name,
+
+            section:
+                section || null
+
+        });
+
+    if(error){
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    closeModal(
+        "classModal"
+    );
+
+    event.target.reset();
+
+    showToast(
+        "Class added successfully.",
+        "success"
+    );
+
+    await loadClasses();
+}
+
+
+/* =========================================
+   DELETE CLASS
+========================================= */
+
+async function deleteClass(id){
+
+    const confirmed =
+        confirm(
+            "Delete this class?"
+        );
+
+    if(!confirmed)
+        return;
+
+    const {error} =
+        await supabaseClient
+        .from("classes")
+        .delete()
+        .eq(
+            "id",
+            id
+        )
+        .eq(
+            "school_id",
+            currentProfile.school_id
+        );
+
+    if(error){
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    showToast(
+        "Class deleted.",
+        "success"
+    );
+
+    await loadClasses();
+}
+
+
+/* =========================================
+   SUBJECTS
+========================================= */
+
+async function loadSubjects(){
+
+    if(!currentProfile?.school_id)
+        return;
+
+    const {data,error} =
+        await supabaseClient
+        .from("subjects")
+        .select(
+            "id,school_id,name,code,created_at"
+        )
+        .eq(
+            "school_id",
+            currentProfile.school_id
+        )
+        .order(
+            "name",
+            {ascending:true}
+        );
+
+    if(error){
+
+        console.error(
+            "Subjects error:",
+            error
+        );
+
+        document.getElementById(
+            "subjectTable"
+        ).innerHTML = `
+        <tr>
+            <td colspan="4"
+                class="empty">
+                ${escapeHTML(
+                    error.message
+                )}
+            </td>
+        </tr>`;
+
+        return;
+    }
+
+    allSubjects =
+        data || [];
+
+    renderSubjects(
+        allSubjects
+    );
+
+    document.getElementById(
+        "subjectCount"
+    ).textContent =
+        allSubjects.length;
+}
+
+
+function renderSubjects(list){
+
+    const table =
+        document.getElementById(
+            "subjectTable"
+        );
+
+    if(!list.length){
+
+        table.innerHTML = `
+        <tr>
+            <td colspan="4"
+                class="empty">
+                No subjects found.
+            </td>
+        </tr>`;
+
+        return;
+    }
+
+    table.innerHTML =
+        list.map(item => `
+
+        <tr>
+
+            <td>
+                <strong>
+                    ${escapeHTML(
+                        item.name ||
+                        "—"
+                    )}
+                </strong>
+            </td>
+
+            <td>
+                ${escapeHTML(
+                    item.code ||
+                    "—"
+                )}
+            </td>
+
+            <td>
+                ${formatDate(
+                    item.created_at
+                )}
+            </td>
+
+            <td>
+
+                <button
+                    class="btn btn-danger btn-small"
+                    onclick="deleteSubject('${item.id}')">
+
+                    Delete
+
+                </button>
+
+            </td>
+
+        </tr>
+
+    `).join("");
+}
+
+
+function filterSubjects(){
+
+    const q =
+        document.getElementById(
+            "subjectSearch"
+        ).value
+        .toLowerCase();
+
+    renderSubjects(
+
+        allSubjects.filter(
+            item => {
+
+                const text = `
+                    ${item.name || ""}
+                    ${item.code || ""}
+                `.toLowerCase();
+
+                return text.includes(q);
+
+            }
+        )
+
+    );
+}
+
+
+async function addSubject(event){
+
+    event.preventDefault();
+
+    if(!currentProfile?.school_id){
+
+        showToast(
+            "School information is missing.",
+            "error"
+        );
+
+        return;
+    }
+
+    const name =
+        document.getElementById(
+            "subjectName"
+        ).value.trim();
+
+    const code =
+        document.getElementById(
+            "subjectCode"
+        ).value.trim();
+
+    if(!name){
+
+        showToast(
+            "Enter a subject name.",
+            "error"
+        );
+
+        return;
+    }
+
+    const {error} =
+        await supabaseClient
+        .from("subjects")
+        .insert({
+
+            id:
+                crypto.randomUUID(),
+
+            school_id:
+                currentProfile.school_id,
+
+            name:
+                name,
+
+            code:
+                code || null
+
+        });
+
+    if(error){
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    closeModal(
+        "subjectModal"
+    );
+
+    event.target.reset();
+
+    showToast(
+        "Subject added successfully.",
+        "success"
+    );
+
+    await loadSubjects();
+}
+
+
+async function deleteSubject(id){
+
+    const confirmed =
+        confirm(
+            "Delete this subject?"
+        );
+
+    if(!confirmed)
+        return;
+
+    const {error} =
+        await supabaseClient
+        .from("subjects")
+        .delete()
+        .eq(
+            "id",
+            id
+        )
+        .eq(
+            "school_id",
+            currentProfile.school_id
+        );
+
+    if(error){
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    showToast(
+        "Subject deleted.",
+        "success"
+    );
+
+    await loadSubjects();
+}
+
+
+/* =========================================
+   NAVIGATION
+========================================= */
+
+function showPage(page){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(item =>
+            item.classList.remove(
+                "active"
+            )
+        );
+
+    const target =
+        document.getElementById(
+            "page-" + page
+        );
+
+    if(target)
+        target.classList.add(
+            "active"
+        );
+
+    document
+        .querySelectorAll(
+            ".nav-btn[data-page]"
+        )
+        .forEach(btn => {
+
+            btn.classList.remove(
+                "active"
+            );
+
+            if(
+                btn.dataset.page === page
+            ){
+
+                btn.classList.add(
+                    "active"
+                );
+            }
+
+        });
+
+    if(
+        [
+            "classes",
+            "subjects",
+            "timetable",
+            "results"
+        ].includes(page)
+    ){
+
+        document
+            .getElementById(
+                "academicsGroup"
+            )
+            .classList.add(
+                "open"
+            );
+    }
+
+    if(
+        [
+            "attendance",
+            "fees",
+            "admissions",
+            "announcements"
+        ].includes(page)
+    ){
+
+        document
+            .getElementById(
+                "managementGroup"
+            )
+            .classList.add(
+                "open"
+            );
+    }
+
+    closeSidebar();
+}
+
+
+/* =========================================
+   GROUP
+========================================= */
+
+function toggleGroup(id){
+
+    document
+        .getElementById(id)
+        .classList.toggle(
+            "open"
+        );
+}
+
+
+/* =========================================
+   MOBILE SIDEBAR
+========================================= */
+
+function toggleSidebar(){
+
+    document
+        .getElementById("sidebar")
+        .classList.toggle(
+            "open"
+        );
+
+    document
+        .getElementById("overlay")
+        .classList.toggle(
+            "show"
+        );
+}
+
+
+function closeSidebar(){
+
+    document
+        .getElementById("sidebar")
+        .classList.remove(
+            "open"
+        );
+
+    document
+        .getElementById("overlay")
+        .classList.remove(
+            "show"
+        );
+}
+
+
+/* =========================================
+   MODALS
+========================================= */
+
+function openModal(id){
+
+    document
+        .getElementById(id)
+        .classList.add(
+            "show"
+        );
+}
+
+
+function closeModal(id){
+
+    document
+        .getElementById(id)
+        .classList.remove(
+            "show"
+        );
+}
+
+
+document.addEventListener(
+    "click",
+    event => {
+
+        if(
+            event.target.classList
+                .contains("modal")
+        ){
+
+            event.target.classList
+                .remove("show");
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+async function logout(){
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href =
+        "login.html";
+}
+
+
+/* =========================================
+   TOAST
+========================================= */
+
+function showToast(
+    message,
+    type=""
+){
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+    toast.textContent =
+        message;
+
+    toast.className =
+        "toast show " + type;
+
+    setTimeout(
+        () => {
+
+            toast.classList.remove(
+                "show"
+            );
+
+        },
+        3500
+    );
+}
+
+
+/* =========================================
+   HELPERS
+========================================= */
+
+function escapeHTML(value){
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+function formatDate(value){
+
+    if(!value)
+        return "—";
+
+    const date =
+        new Date(value);
+
+    if(
+        Number.isNaN(
+            date.getTime()
+        )
+    ){
+
+        return "—";
+    }
+
+    return date.toLocaleDateString(
+        "en-NG",
+        {
+            day:"numeric",
+            month:"short",
+            year:"numeric"
+        }
+    );
+}
+
+</script>
+
+</body>
+</html>

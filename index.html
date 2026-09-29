@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danttel SchoolHub</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f3f6fb;
+            padding: 20px;
+        }
+
+        .box {
+            width: 100%;
+            max-width: 430px;
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 10px 35px rgba(0,0,0,.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: 0;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .secondary {
+            background: #111827;
+        }
+
+        #message {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .dashboard {
+            display: none;
+            text-align: center;
+        }
+
+        .dashboard h2 {
+            margin-bottom: 10px;
+        }
+
+        .dashboard p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <!-- AUTH -->
+    <div id="authPage">
+
+        <h1>🏫 Danttel SchoolHub</h1>
+        <p class="subtitle">School Administrator</p>
+
+        <input
+            type="email"
+            id="email"
+            placeholder="Admin email"
+        >
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Password"
+        >
+
+        <input
+            type="text"
+            id="fullName"
+            placeholder="Full name"
+        >
+
+        <button onclick="registerAdmin()">
+            Create Admin Account
+        </button>
+
+        <button class="secondary" onclick="loginAdmin()">
+            Login
+        </button>
+
+        <div id="message"></div>
+
+    </div>
+
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="dashboard">
+
+        <h2>🎉 Welcome to Danttel</h2>
+
+        <p id="userInfo"></p>
+
+        <button onclick="logout()">
+            Logout
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL = "https://cxdqgulipvhgpiwrjvgo.supabase.co";
+const SUPABASE_KEY = "sb_publishable_MdS04D2lfMwcU2Du8rjnwQ_Ffu3kXRU";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+// MESSAGE
+function showMessage(message, success = false) {
+
+    const box = document.getElementById("message");
+
+    box.textContent = message;
+
+    box.style.color = success ? "green" : "red";
+}
+
+
+// REGISTER
+async function registerAdmin() {
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const fullName =
+        document.getElementById("fullName").value.trim();
+
+
+    if (!email || !password || !fullName) {
+
+        showMessage("Please fill all fields.");
+
+        return;
+    }
+
+
+    if (password.length < 6) {
+
+        showMessage("Password must be at least 6 characters.");
+
+        return;
+    }
+
+
+    showMessage("Creating account...", true);
+
+
+    const { data, error } =
+        await supabaseClient.auth.signUp({
+
+            email: email,
+
+            password: password,
+
+            options: {
+                data: {
+                    full_name: fullName
+                }
+            }
+
+        });
+
+
+    if (error) {
+
+        showMessage(error.message);
+
+        return;
+    }
+
+
+    if (!data.user) {
+
+        showMessage("Account was not created.");
+
+        return;
+    }
+
+
+    showMessage(
+        "Account created successfully. Check your email if confirmation is required.",
+        true
+    );
+}
+
+
+// LOGIN
+async function loginAdmin() {
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+
+    if (!email || !password) {
+
+        showMessage("Enter your email and password.");
+
+        return;
+    }
+
+
+    showMessage("Logging in...", true);
+
+
+    const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+
+            email: email,
+
+            password: password
+
+        });
+
+
+    if (error) {
+
+        showMessage(error.message);
+
+        return;
+    }
+
+
+    showMessage("Login successful!", true);
+
+    showDashboard(data.user);
+}
+
+
+// DASHBOARD
+function showDashboard(user) {
+
+    document.getElementById("authPage").style.display =
+        "none";
+
+    document.getElementById("dashboard").style.display =
+        "block";
+
+    document.getElementById("userInfo").textContent =
+        "Logged in as " + user.email;
+}
+
+
+// LOGOUT
+async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    document.getElementById("dashboard").style.display =
+        "none";
+
+    document.getElementById("authPage").style.display =
+        "block";
+
+    showMessage("Logged out.", true);
+}
+
+
+// CHECK EXISTING SESSION
+async function checkSession() {
+
+    const { data } =
+        await supabaseClient.auth.getSession();
+
+    if (data.session) {
+
+        showDashboard(data.session.user);
+
+    }
+}
+
+
+checkSession();
+
+</script>
+
+</body>
+</html>
