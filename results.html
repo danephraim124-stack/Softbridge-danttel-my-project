@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Danttel SchoolHub - Results</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Inter,Arial,sans-serif;
+}
+
+body{
+    background:#f5f7fb;
+    color:#172033;
+}
+
+header{
+    background:#111827;
+    color:white;
+    padding:18px 22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.logo{
+    font-size:21px;
+    font-weight:800;
+}
+
+.back{
+    color:white;
+    text-decoration:none;
+    background:#2563eb;
+    padding:9px 14px;
+    border-radius:9px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:25px 16px;
+}
+
+.hero{
+    margin-bottom:22px;
+}
+
+.hero h1{
+    font-size:30px;
+    margin-bottom:6px;
+}
+
+.hero p{
+    color:#667085;
+}
+
+.card{
+    background:white;
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 5px 20px rgba(0,0,0,.05);
+}
+
+.card h2{
+    margin-bottom:18px;
+    font-size:20px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.field label{
+    font-size:14px;
+    font-weight:700;
+}
+
+input,select{
+    width:100%;
+    padding:12px;
+    border:1px solid #d8dee9;
+    border-radius:9px;
+    outline:none;
+    font-size:15px;
+}
+
+input:focus,select:focus{
+    border-color:#2563eb;
+}
+
+.total-box{
+    background:#eef4ff;
+    border-radius:10px;
+    padding:14px;
+    font-weight:800;
+    font-size:18px;
+}
+
+button{
+    border:0;
+    cursor:pointer;
+    padding:11px 16px;
+    border-radius:9px;
+    font-weight:700;
+}
+
+.primary{
+    background:#2563eb;
+    color:white;
+}
+
+.primary:hover{
+    background:#1d4ed8;
+}
+
+.secondary{
+    background:#e8edf5;
+    color:#172033;
+}
+
+.danger{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+.edit{
+    background:#e0e7ff;
+    color:#3730a3;
+}
+
+.actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.search{
+    margin-bottom:15px;
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:800px;
+}
+
+th,td{
+    text-align:left;
+    padding:13px;
+    border-bottom:1px solid #edf0f5;
+}
+
+th{
+    background:#f8fafc;
+    font-size:13px;
+}
+
+td{
+    font-size:14px;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:20px;
+    background:#eaf2ff;
+    color:#2563eb;
+    font-weight:700;
+}
+
+.message{
+    margin-bottom:15px;
+    padding:12px;
+    border-radius:9px;
+    display:none;
+}
+
+.success{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.error{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.empty{
+    text-align:center;
+    padding:30px;
+    color:#667085;
+}
+
+@media(max-width:700px){
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .hero h1{
+        font-size:25px;
+    }
+
+    header{
+        padding:15px;
+    }
+
+    .logo{
+        font-size:18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+Danttel SchoolHub
+</div>
+
+<a href="dashboard.html" class="back">
+← Dashboard
+</a>
+
+</header>
+
+<div class="container">
+
+<div class="hero">
+
+<h1>Results Management 📚</h1>
+
+<p>
+Add, manage and review student academic results.
+</p>
+
+</div>
+
+<div id="message" class="message"></div>
+
+<!-- ADD RESULT -->
+
+<div class="card">
+
+<h2 id="formTitle">Add Result</h2>
+
+<div class="form-grid">
+
+<div class="field">
+
+<label>Student</label>
+
+<select id="student">
+<option value="">Loading students...</option>
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>Subject</label>
+
+<select id="subject">
+<option value="">Loading subjects...</option>
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>Session</label>
+
+<input
+id="session"
+placeholder="2026/2027"
+value="2026/2027"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>Term</label>
+
+<select id="term">
+
+<option value="">Select term</option>
+<option value="First Term">First Term</option>
+<option value="Second Term">Second Term</option>
+<option value="Third Term">Third Term</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>CA Score</label>
+
+<input
+id="ca"
+type="number"
+min="0"
+max="40"
+placeholder="0 - 40"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>Exam Score</label>
+
+<input
+id="exam"
+type="number"
+min="0"
+max="60"
+placeholder="0 - 60"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>Total</label>
+
+<div class="total-box">
+
+<span id="total">0</span> / 100
+
+</div>
+
+</div>
+
+</div>
+
+<br>
+
+<div class="actions">
+
+<button
+class="primary"
+onclick="saveResult()"
+id="saveBtn"
+>
+Save Result
+</button>
+
+<button
+class="secondary"
+onclick="resetForm()"
+>
+Clear
+</button>
+
+</div>
+
+</div>
+
+
+<!-- RESULTS -->
+
+<div class="card">
+
+<h2>Saved Results</h2>
+
+<input
+class="search"
+id="search"
+placeholder="🔎 Search student or subject..."
+oninput="renderResults()"
+>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Student</th>
+<th>Subject</th>
+<th>Session</th>
+<th>Term</th>
+<th>CA</th>
+<th>Exam</th>
+<th>Total</th>
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody id="resultsBody">
+
+<tr>
+
+<td colspan="8" class="empty">
+Loading results...
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://cxdqgulipvhgpiwrjvgo.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_MdS04D2lfMwcU2Du8rjnwQ_Ffu3kXRU";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+let currentUser = null;
+let currentProfile = null;
+
+let students = [];
+let subjects = [];
+let results = [];
+
+let editingId = null;
+
+
+/* MESSAGE */
+
+function showMessage(text,type){
+
+    const box =
+        document.getElementById("message");
+
+    box.textContent = text;
+
+    box.className =
+        "message " + type;
+
+    box.style.display = "block";
+
+    setTimeout(()=>{
+        box.style.display = "none";
+    },4000);
+}
+
+
+/* AUTH */
+
+async function loadUser(){
+
+    const {
+        data:{session}
+    } =
+    await supabaseClient.auth.getSession();
+
+    if(!session){
+
+        window.location.href =
+            "login.html";
+
+        return false;
+    }
+
+    currentUser =
+        session.user;
+
+    const {
+        data:profile,
+        error
+    } =
+    await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id",currentUser.id)
+        .single();
+
+    if(error){
+
+        showMessage(
+            error.message,
+            "error"
+        );
+
+        return false;
+    }
+
+    currentProfile =
+        profile;
+
+    if(!currentProfile.school_id){
+
+        showMessage(
+            "Your account is not connected to a school.",
+            "error"
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
+
+/* LOAD STUDENTS */
+
+async function loadStudents(){
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("students")
+        .select(
+            "id,school_id,admission_number,full_name,class_id"
+        )
+        .eq(
+            "school_id",
+            currentProfile.school_id
+        )
+        .order(
+            "full_name",
+            {ascending:true}
+        );
+
+    if(error){
+
+        console.error(error);
+
+        showMessage(
+            "Could not load students: " +
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    students =
+        data || [];
+
+    const select =
+        document.getElementById("student");
+
+    select.innerHTML =
+        `<option value="">Select student</option>`;
+
+    students.forEach(student=>{
+
+        const option =
+            document.createElement("option");
+
+        option.value =
+            student.id;
+
+        option.textContent =
+            `${student.full_name} — ${student.admission_number}`;
+
+        select.appendChild(option);
+
+    });
+}
+
+
+/* LOAD SUBJECTS */
+
+async function loadSubjects(){
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("subjects")
+        .select(
+            "id,name,code"
+        )
+        .eq(
+            "school_id",
+            currentProfile.school_id
+        )
+        .order(
+            "name",
+            {ascending:true}
+        );
+
+    if(error){
+
+        console.error(error);
+
+        showMessage(
+            "Could not load subjects: " +
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    subjects =
+        data || [];
+
+    const select =
+        document.getElementById("subject");
+
+    select.innerHTML =
+        `<option value="">Select subject</option>`;
+
+    subjects.forEach(subject=>{
+
+        const option =
+            document.createElement("option");
+
+        option.value =
+            subject.id;
+
+        option.textContent =
+            subject.code
+            ? `${subject.name} (${subject.code})`
+            : subject.name;
+
+        select.appendChild(option);
+
+    });
+}
+
+
+/* LOAD RESULTS */
+
+async function loadResults(){
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("results")
+        .select(`
+            id,
+            school_id,
+            student_id,
+            subject_id,
+            session,
+            term,
+            ca_score,
+            exam_score,
+            total
+        `)
+        .eq(
+            "school_id",
+            currentProfile.school_id
+        )
+        .order(
+            "session",
+            {ascending:false}
+        );
+
+    if(error){
+
+        console.error(error);
+
+        showMessage(
+            "Could not load results: " +
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    results =
+        data || [];
+
+    renderResults();
+}
+
+
+/* CALCULATE TOTAL */
+
+function calculateTotal(){
+
+    const ca =
+        Number(
+            document.getElementById("ca").value
+        ) || 0;
+
+    const exam =
+        Number(
+            document.getElementById("exam").value
+        ) || 0;
+
+    const total =
+        ca + exam;
+
+    document.getElementById("total")
+        .textContent =
+        total;
+
+    return total;
+}
+
+
+document.getElementById("ca")
+    .addEventListener(
+        "input",
+        calculateTotal
+    );
+
+document.getElementById("exam")
+    .addEventListener(
+        "input",
+        calculateTotal
+    );
+
+
+/* SAVE RESULT */
+
+async function saveResult(){
+
+    const studentId =
+        document.getElementById("student").value;
+
+    const subjectId =
+        document.getElementById("subject").value;
+
+    const session =
+        document.getElementById("session").value.trim();
+
+    const term =
+        document.getElementById("term").value;
+
+    const ca =
+        Number(
+            document.getElementById("ca").value
+        );
+
+    const exam =
+        Number(
+            document.getElementById("exam").value
+        );
+
+    const total =
+        calculateTotal();
+
+
+    if(!studentId){
+
+        showMessage(
+            "Please select a student.",
+            "error"
+        );
+
+        return;
+    }
+
+    if(!subjectId){
+
+        showMessage(
+            "Please select a subject.",
+            "error"
+        );
+
+        return;
+    }
+
+    if(!session){
+
+        showMessage(
+            "Please enter the academic session.",
+            "error"
+        );
+
+        return;
+    }
+
+    if(!term){
+
+        showMessage(
+            "Please select a term.",
+            "error"
+        );
+
+        return;
+    }
+
+    if(
+        Number.isNaN(ca) ||
+        ca < 0 ||
+        ca > 40
+    ){
+
+        showMessage(
+            "CA score must be between 0 and 40.",
+            "error"
+        );
+
+        return;
+    }
+
+    if(
+        Number.isNaN(exam) ||
+        exam < 0 ||
+        exam > 60
+    ){
+
+        showMessage(
+            "Exam score must be between 0 and 60.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const duplicate =
+        results.find(r =>
+            r.student_id === studentId &&
+            r.subject_id === subjectId &&
+            r.session === session &&
+            r.term === term &&
+            r.id !== editingId
+        );
+
+    if(duplicate){
+
+        showMessage(
+            "This student already has a result for this subject, session and term.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const saveBtn =
+        document.getElementById("saveBtn");
+
+    saveBtn.disabled = true;
+
+    saveBtn.textContent =
+        editingId
+        ? "Updating..."
+        : "Saving...";
+
+
+    let response;
+
+
+    if(editingId){
+
+        response =
+        await supabaseClient
+            .from("results")
+            .update({
+
+                student_id:
+                    studentId,
+
+                subject_id:
+                    subjectId,
+
+                session:
+                    session,
+
+                term:
+                    term,
+
+                ca_score:
+                    ca,
+
+                exam_score:
+                    exam,
+
+                total:
+                    total
+
+            })
+            .eq(
+                "id",
+                editingId
+            )
+            .eq(
+                "school_id",
+                currentProfile.school_id
+            );
+
+    }else{
+
+        response =
+        await supabaseClient
+            .from("results")
+            .insert({
+
+                id:
+                    crypto.randomUUID(),
+
+                school_id:
+                    currentProfile.school_id,
+
+                student_id:
+                    studentId,
+
+                subject_id:
+                    subjectId,
+
+                session:
+                    session,
+
+                term:
+                    term,
+
+                ca_score:
+                    ca,
+
+                exam_score:
+                    exam,
+
+                total:
+                    total
+
+            });
+
+    }
+
+
+    saveBtn.disabled = false;
+
+    saveBtn.textContent =
+        editingId
+        ? "Update Result"
+        : "Save Result";
+
+
+    if(response.error){
+
+        console.error(response.error);
+
+        showMessage(
+            response.error.message,
+            "error"
+        );
+
+        return;
+    }
+
+
+    showMessage(
+        editingId
+        ? "Result updated successfully! ✅"
+        : "Result saved successfully! ✅",
+        "success"
+    );
+
+
+    resetForm();
+
+    await loadResults();
+}
+
+
+/* RENDER RESULTS */
+
+function renderResults(){
+
+    const body =
+        document.getElementById("resultsBody");
+
+    const search =
+        document.getElementById("search")
+            .value
+            .toLowerCase()
+            .trim();
+
+
+    const filtered =
+        results.filter(result=>{
+
+            const student =
+                students.find(
+                    s =>
+                    s.id === result.student_id
+                );
+
+            const subject =
+                subjects.find(
+                    s =>
+                    s.id === result.subject_id
+                );
+
+
+            const studentName =
+                student?.full_name
+                ?.toLowerCase() || "";
+
+            const admission =
+                student?.admission_number
+                ?.toLowerCase() || "";
+
+            const subjectName =
+                subject?.name
+                ?.toLowerCase() || "";
+
+
+            return (
+                studentName.includes(search) ||
+                admission.includes(search) ||
+                subjectName.includes(search)
+            );
+
+        });
+
+
+    if(!filtered.length){
+
+        body.innerHTML = `
+        <tr>
+            <td colspan="8" class="empty">
+                No results found.
+            </td>
+        </tr>`;
+
+        return;
+    }
+
+
+    body.innerHTML =
+        filtered.map(result=>{
+
+            const student =
+                students.find(
+                    s =>
+                    s.id === result.student_id
+                );
+
+            const subject =
+                subjects.find(
+                    s =>
+                    s.id === result.subject_id
+                );
+
+
+            return `
+
+            <tr>
+
+                <td>
+
+                    <strong>
+                        ${escapeHTML(
+                            student?.full_name ||
+                            "Unknown student"
+                        )}
+                    </strong>
+
+                    <br>
+
+                    <small>
+                        ${escapeHTML(
+                            student?.admission_number ||
+                            ""
+                        )}
+                    </small>
+
+                </td>
+
+
+                <td>
+                    ${escapeHTML(
+                        subject?.name ||
+                        "Unknown subject"
+                    )}
+                </td>
+
+
+                <td>
+                    ${escapeHTML(
+                        result.session
+                    )}
+                </td>
+
+
+                <td>
+                    <span class="badge">
+                        ${escapeHTML(
+                            result.term
+                        )}
+                    </span>
+                </td>
+
+
+                <td>
+                    ${result.ca_score ?? 0}
+                </td>
+
+
+                <td>
+                    ${result.exam_score ?? 0}
+                </td>
+
+
+                <td>
+
+                    <strong>
+                        ${result.total ?? 0}
+                    </strong>
+
+                </td>
+
+
+                <td>
+
+                    <div class="actions">
+
+                        <button
+                            class="edit"
+                            onclick="editResult('${result.id}')"
+                        >
+                            Edit
+                        </button>
+
+                        <button
+                            class="danger"
+                            onclick="deleteResult('${result.id}')"
+                        >
+                            Delete
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+            `;
+
+        }).join("");
+
+}
+
+
+/* EDIT */
+
+function editResult(id){
+
+    const result =
+        results.find(
+            r => r.id === id
+        );
+
+    if(!result) return;
+
+
+    editingId =
+        id;
+
+
+    document.getElementById("student")
+        .value =
+        result.student_id;
+
+    document.getElementById("subject")
+        .value =
+        result.subject_id;
+
+    document.getElementById("session")
+        .value =
+        result.session;
+
+    document.getElementById("term")
+        .value =
+        result.term;
+
+    document.getElementById("ca")
+        .value =
+        result.ca_score;
+
+    document.getElementById("exam")
+        .value =
+        result.exam_score;
+
+
+    calculateTotal();
+
+
+    document.getElementById("formTitle")
+        .textContent =
+        "Edit Result";
+
+    document.getElementById("saveBtn")
+        .textContent =
+        "Update Result";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* DELETE */
+
+async function deleteResult(id){
+
+    const result =
+        results.find(
+            r => r.id === id
+        );
+
+    if(!result) return;
+
+
+    const student =
+        students.find(
+            s =>
+            s.id === result.student_id
+        );
+
+
+    const confirmed =
+        confirm(
+            `Delete the result for ${student?.full_name || "this student"}?`
+        );
+
+
+    if(!confirmed) return;
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+        .from("results")
+        .delete()
+        .eq(
+            "id",
+            id
+        )
+        .eq(
+            "school_id",
+            currentProfile.school_id
+        );
+
+
+    if(error){
+
+        showMessage(
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+
+    showMessage(
+        "Result deleted successfully.",
+        "success"
+    );
+
+
+    await loadResults();
+
+}
+
+
+/* RESET */
+
+function resetForm(){
+
+    editingId = null;
+
+    document.getElementById("student")
+        .value = "";
+
+    document.getElementById("subject")
+        .value = "";
+
+    document.getElementById("session")
+        .value = "2026/2027";
+
+    document.getElementById("term")
+        .value = "";
+
+    document.getElementById("ca")
+        .value = "";
+
+    document.getElementById("exam")
+        .value = "";
+
+    document.getElementById("total")
+        .textContent = "0";
+
+    document.getElementById("formTitle")
+        .textContent =
+        "Add Result";
+
+    document.getElementById("saveBtn")
+        .textContent =
+        "Save Result";
+}
+
+
+/* HTML SECURITY */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+/* START */
+
+async function init(){
+
+    const loggedIn =
+        await loadUser();
+
+    if(!loggedIn) return;
+
+    await loadStudents();
+
+    await loadSubjects();
+
+    await loadResults();
+
+}
+
+init();
+
+</script>
+
+</body>
+</html>
